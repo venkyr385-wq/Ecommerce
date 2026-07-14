@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA | Premium E-Commerce Experience</title>
+  <meta name="description" content="Discover AURA, a next-generation luxury e-commerce store with high-performance browsing, interactive catalogs, and personalized shopping.">
+  
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              primary:   'var(--accent)',
+              hover:     'var(--accent-hover)',
+              glow:      'var(--accent-glow)',
+              secondary: 'var(--accent-secondary)',
+            },
+            themeBg: {
+              primary:   'var(--bg-primary)',
+              secondary: 'var(--bg-secondary)',
+              card:      'var(--card-bg)',
+            },
+            themeText: {
+              primary:   'var(--text-primary)',
+              secondary: 'var(--text-secondary)',
+              muted:     'var(--text-muted)',
+            },
+            luxury: {
+              gold:      '#C8A96A',
+              richGold:  '#B89042',
+              brown:     '#5A4634',
+              beige:     '#F7F3EE',
+              cream:     '#FCFAF7',
+              border:    '#E8DED1',
+              charcoal:  '#2B2B2B',
+            }
+          },
+          fontFamily: {
+            sans:    ['var(--font-primary)'],
+            display: ['var(--font-display)'],
+          },
+          borderRadius: {
+            'card':  '20px',
+            'panel': '24px',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Swiper.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Authentication Guard - Protects the app and requires login -->
+  <script src="auth-guard.js"></script>
+</head>
+<body class="bg-themeBg-primary text-themeText-primary selection:bg-brand-primary selection:text-white">
+
+  <!-- Preloader Screen (Feature 12) -->
+  <div id="preloader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center transition-all duration-500" style="background:#F7F3EE;">
+    <div class="flex flex-col items-center gap-6">
+      <div class="relative w-24 h-24 flex items-center justify-center rounded-full border shadow-2xl" style="background:#FCFAF7; border-color:#E8DED1;">
+        <i class="fa-solid fa-wand-magic-sparkles text-4xl text-brand-primary animate-pulse"></i>
+        <div class="absolute inset-0 rounded-full border-2 border-brand-primary/30 animate-ping"></div>
+      </div>
+      <div class="text-center">
+        <h2 class="font-display text-2xl font-extrabold tracking-widest bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">AURA</h2>
+        <p class="text-xs text-themeText-muted uppercase tracking-widest mt-1">Curating Premium Goods</p>
+      </div>
+      <div class="w-48 h-1 bg-white/10 rounded-full overflow-hidden mt-2">
+        <div id="preloader-progress" class="w-0 h-full bg-gradient-to-r from-brand-primary to-brand-secondary transition-all duration-300"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Cursor Elements (Feature 1) -->
+  <div class="custom-cursor-dot select-none pointer-events-none hidden md:block"></div>
+  <div class="custom-cursor-outline select-none pointer-events-none hidden md:block"></div>
+
+  <!-- Mesh Gradient Background -->
+  <div class="mesh-gradient-bg">
+    <div class="mesh-circle mesh-circle-1"></div>
+    <div class="mesh-circle mesh-circle-2"></div>
+    <div class="mesh-circle mesh-circle-3"></div>
+  </div>
+
+  <!-- --- NAVIGATION HEADER --- -->
+  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 glass-header border-b border-white/10 transition-all duration-300">
+
+    <!-- ── PREMIUM TOP SEARCH BAND ── -->
+    <div class="top-search-band border-b" style="border-color:rgba(200,169,106,0.13); background:linear-gradient(90deg, rgba(200,169,106,0.06) 0%, rgba(90,70,52,0.04) 50%, rgba(200,169,106,0.06) 100%);">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-3 min-w-0">
+
+        <!-- Lens icon with glow -->
+        <div class="top-search-lens flex-shrink-0 relative">
+          <div class="lens-ring"></div>
+          <div class="lens-glow-ring"></div>
+          <i class="fa-solid fa-magnifying-glass lens-icon"></i>
+        </div>
+
+        <!-- Input -->
+        <div class="relative flex-1 min-w-0 top-search-input-wrap">
+          <input
+            type="text"
+            id="top-search-input"
+            placeholder="Search watches, brands, luxury goods…"
+            autocomplete="off"
+            class="top-search-input w-full bg-transparent border-none focus:outline-none"
+          />
+          <!-- Animated underline -->
+          <span class="top-search-underline"></span>
+        </div>
+
+        <!-- Tag pills — only on large screens -->
+        <div class="hidden lg:flex items-center gap-2 flex-shrink-0">
+          <span class="top-search-tag" onclick="topSearchTag(this)">Rolex</span>
+          <span class="top-search-tag" onclick="topSearchTag(this)">Apple Watch</span>
+          <span class="top-search-tag" onclick="topSearchTag(this)">TAG Heuer</span>
+          <span class="top-search-tag" onclick="topSearchTag(this)">Casio</span>
+          <span class="top-search-tag" onclick="topSearchTag(this)">Omega</span>
+        </div>
+
+        <!-- Mic Button -->
+        <button id="top-band-mic-btn" class="top-search-mic flex-shrink-0" title="Voice Search">
+          <i class="fa-solid fa-microphone" id="top-band-mic-icon"></i>
+          <span class="top-mic-ripple"></span>
+        </button>
+
+        <!-- Search button -->
+        <button id="top-search-btn" class="top-search-go flex-shrink-0 flex items-center gap-2">
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+          <span class="hidden sm:inline text-xs font-bold tracking-widest uppercase">Search</span>
+        </button>
+
+      </div>
+    </div>
+    <!-- ── END TOP SEARCH BAND ── -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center">
+          <a href="#home" class="flex items-center gap-2 font-display text-2xl font-extrabold tracking-wider bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">
+            <i class="fa-solid fa-wand-magic-sparkles text-brand-primary"></i> AURA
+          </a>
+        </div>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center space-x-8">
+          <a href="#home" data-link="home" class="nav-link text-sm font-medium hover:text-brand-primary transition-colors duration-200 text-brand-primary">Home</a>
+          <a href="#shop" data-link="shop" class="nav-link text-sm font-medium hover:text-brand-primary transition-colors duration-200 text-themeText-secondary">Shop</a>
+          <a href="#wishlist" data-link="wishlist" class="nav-link text-sm font-medium hover:text-brand-primary transition-colors duration-200 text-themeText-secondary">Wishlist</a>
+          <a href="#compare" data-link="compare" class="nav-link text-sm font-medium hover:text-brand-primary transition-colors duration-200 text-themeText-secondary">Compare</a>
+          <a href="#admin" data-link="admin" class="nav-link text-sm font-medium hover:text-brand-primary transition-colors duration-200 text-themeText-secondary">Admin Dashboard</a>
+        </nav>
+
+        <!-- Hidden inputs kept for JS compatibility -->
+        <div class="hidden">
+          <input type="text" id="global-search-input" placeholder="Search premium products...">
+          <button id="voice-search-btn"><i class="fa-solid fa-microphone"></i></button>
+          <div id="search-suggestions">
+            <div id="suggestions-list"></div>
+            <div id="recent-searches-list"></div>
+          </div>
+        </div>
+
+        <!-- Action Items (Right) -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- Currency Selector — hidden on mobile -->
+          <div class="relative inline-block text-left hidden sm:block" id="currency-selector-container">
+            <button id="currency-dropdown-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-themeText-muted/20 hover:border-brand-primary bg-themeBg-primary/20 text-xs font-semibold text-themeText-secondary hover:text-themeText-primary transition-all duration-300">
+              <span id="active-currency">INR ₹</span>
+              <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </button>
+            <div id="currency-dropdown-menu" class="absolute right-0 mt-2 w-32 origin-top-right rounded-2xl bg-themeBg-card border border-white/10 shadow-2xl p-2 hidden z-50 glass-panel">
+              <button class="currency-opt w-full text-left px-3 py-2 text-xs rounded-xl hover:bg-white/10 transition-colors" data-currency="INR">INR ₹</button>
+              <button class="currency-opt w-full text-left px-3 py-2 text-xs rounded-xl hover:bg-white/10 transition-colors" data-currency="USD">USD $</button>
+              <button class="currency-opt w-full text-left px-3 py-2 text-xs rounded-xl hover:bg-white/10 transition-colors" data-currency="EUR">EUR €</button>
+              <button class="currency-opt w-full text-left px-3 py-2 text-xs rounded-xl hover:bg-white/10 transition-colors" data-currency="GBP">GBP £</button>
+            </div>
+          </div>
+
+          <!-- Language Selector — hidden on mobile -->
+          <div class="relative inline-block text-left hidden sm:block" id="language-selector-container">
+            <button id="language-dropdown-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-themeText-muted/20 hover:border-brand-primary bg-themeBg-primary/20 text-xs font-semibold text-themeText-secondary hover:text-themeText-primary transition-all duration-300">
+              <span id="active-language">ENG</span>
+              <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </button>
+            <div id="language-dropdown-menu" class="absolute right-0 mt-2 w-32 origin-top-right rounded-2xl bg-themeBg-card border border-white/10 shadow-2xl p-2 hidden z-50 glass-panel">
+              <button class="language-opt w-full text-left px-3 py-2 text-xs rounded-xl hover:bg-white/10 transition-colors" data-lang="ENG">English</button>
+              <button class="language-opt w-full text-left px-3 py-2 text-xs rounded-xl hover:bg-white/10 transition-colors" data-lang="HIN">हिन्दी</button>
+              <button class="language-opt w-full text-left px-3 py-2 text-xs rounded-xl hover:bg-white/10 transition-colors" data-lang="ESP">Español</button>
+              <button class="language-opt w-full text-left px-3 py-2 text-xs rounded-xl hover:bg-white/10 transition-colors" data-lang="FRA">Français</button>
+            </div>
+          </div>
+
+          <!-- Theme Toggle -->
+          <button id="theme-toggle" class="p-2 rounded-full hover:bg-themeText-muted/10 text-themeText-secondary hover:text-themeText-primary transition-all duration-300" aria-label="Toggle dark mode">
+            <i class="fa-solid fa-moon text-base dark:hidden"></i>
+            <i class="fa-solid fa-sun text-base hidden dark:block text-yellow-400"></i>
+          </button>
+
+          <!-- Wishlist Badge -->
+          <a href="#wishlist" class="relative p-2 rounded-full hover:bg-themeText-muted/10 text-themeText-secondary hover:text-themeText-primary transition-all duration-300">
+            <i class="fa-regular fa-heart text-base"></i>
+            <span id="wishlist-badge" class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-themeBg-secondary scale-0 transition-all duration-300">0</span>
+          </a>
+
+          <!-- Cart Badge -->
+          <button id="cart-drawer-trigger" class="relative p-2 rounded-full hover:bg-themeText-muted/10 text-themeText-secondary hover:text-themeText-primary transition-all duration-300">
+            <i class="fa-solid fa-bag-shopping text-base"></i>
+            <span id="cart-badge" class="absolute top-1 right-1 w-4 h-4 bg-brand-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-themeBg-secondary scale-0 transition-all duration-300">0</span>
+          </button>
+
+          <!-- User Profile -->
+          <button id="user-profile-trigger" class="flex items-center gap-2 p-1 rounded-full border border-themeText-muted/20 hover:border-brand-primary transition-all duration-300 flex-shrink-0">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" alt="User Avatar" class="w-8 h-8 rounded-full object-cover">
+          </button>
+
+          <!-- Mobile Menu Toggle -->
+          <button id="mobile-menu-trigger" class="md:hidden p-2 rounded-full hover:bg-themeText-muted/10 text-themeText-secondary hover:text-themeText-primary transition-all duration-300">
+            <i class="fa-solid fa-bars text-base"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+    
+    <!-- Mobile Search Overlay (removed — using top search band) -->
+    <div id="mobile-search-bar" class="hidden">
+      <input type="text" id="mobile-search-input" placeholder="Search products...">
+      <button id="mobile-voice-search-btn" title="Voice Search"><i class="fa-solid fa-microphone"></i></button>
+    </div>
+  </header>
+
+  <!-- --- MOBILE NAVIGATION DRAWER --- -->
+  <div id="mobile-nav-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
+    <div class="fixed top-0 bottom-0 left-0 w-80 bg-themeBg-secondary p-6 flex flex-col justify-between shadow-2xl -translate-x-full transition-transform duration-300">
+      <div>
+        <div class="flex items-center justify-between mb-8">
+          <div class="font-display text-2xl font-extrabold tracking-wider bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">
+            <i class="fa-solid fa-wand-magic-sparkles text-brand-primary"></i> AURA
+          </div>
+          <button id="mobile-nav-close" class="p-2 text-themeText-secondary hover:text-themeText-primary">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+        <nav class="flex flex-col gap-4">
+          <a href="#home" class="mobile-nav-link text-lg font-medium text-brand-primary"><i class="fa-solid fa-house w-8 text-brand-primary"></i> Home</a>
+          <a href="#shop" class="mobile-nav-link text-lg font-medium text-themeText-secondary"><i class="fa-solid fa-shop w-8"></i> Shop</a>
+          <a href="#wishlist" class="mobile-nav-link text-lg font-medium text-themeText-secondary"><i class="fa-regular fa-heart w-8"></i> Wishlist</a>
+          <a href="#compare" class="mobile-nav-link text-lg font-medium text-themeText-secondary"><i class="fa-solid fa-scale-balanced w-8"></i> Compare</a>
+          <a href="#admin" class="mobile-nav-link text-lg font-medium text-themeText-secondary"><i class="fa-solid fa-chart-line w-8"></i> Admin</a>
+        </nav>
+      </div>
+      <div class="border-t border-white/5 pt-6 flex flex-col gap-3 text-sm text-themeText-muted">
+        <a href="#about" class="mobile-nav-link"><i class="fa-solid fa-circle-info w-6"></i> About Us</a>
+        <a href="#contact" class="mobile-nav-link"><i class="fa-solid fa-envelope w-6"></i> Contact Us</a>
+        <a href="#faq" class="mobile-nav-link"><i class="fa-solid fa-circle-question w-6"></i> FAQ</a>
+        <div class="flex flex-col gap-3 mt-4 border-t border-white/5 pt-4">
+          <div class="flex items-center justify-between text-xs text-themeText-secondary">
+            <span>Currency:</span>
+            <div class="flex gap-1.5">
+              <button class="mobile-currency-opt px-2 py-1 rounded border border-themeText-muted/20 text-[10px] font-bold hover:border-brand-primary" data-currency="INR">INR</button>
+              <button class="mobile-currency-opt px-2 py-1 rounded border border-themeText-muted/20 text-[10px] font-bold hover:border-brand-primary" data-currency="USD">USD</button>
+              <button class="mobile-currency-opt px-2 py-1 rounded border border-themeText-muted/20 text-[10px] font-bold hover:border-brand-primary" data-currency="EUR">EUR</button>
+              <button class="mobile-currency-opt px-2 py-1 rounded border border-themeText-muted/20 text-[10px] font-bold hover:border-brand-primary" data-currency="GBP">GBP</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs text-themeText-secondary">
+            <span>Language:</span>
+            <div class="flex gap-1.5">
+              <button class="mobile-lang-opt px-2 py-1 rounded border border-themeText-muted/20 text-[10px] font-bold hover:border-brand-primary" data-lang="ENG">EN</button>
+              <button class="mobile-lang-opt px-2 py-1 rounded border border-themeText-muted/20 text-[10px] font-bold hover:border-brand-primary" data-lang="HIN">हि</button>
+              <button class="mobile-lang-opt px-2 py-1 rounded border border-themeText-muted/20 text-[10px] font-bold hover:border-brand-primary" data-lang="ESP">ES</button>
+              <button class="mobile-lang-opt px-2 py-1 rounded border border-themeText-muted/20 text-[10px] font-bold hover:border-brand-primary" data-lang="FRA">FR</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 mt-4 text-xs">
+          <span>&copy; 2026 AURA Store</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- --- SHOPPING CART DRAWER --- -->
+  <div id="cart-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="fixed top-0 bottom-0 right-0 w-full sm:w-[480px] bg-themeBg-secondary p-6 flex flex-col justify-between shadow-2xl translate-x-full transition-transform duration-300">
+      
+      <!-- Cart Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-themeText-muted/10">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-bag-shopping text-brand-primary text-xl"></i>
+          <h2 class="text-xl font-display font-bold">Your Shopping Cart</h2>
+          <span id="cart-count-title" class="text-sm bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded-full font-semibold">0</span>
+        </div>
+        <button id="cart-drawer-close" class="p-2 text-themeText-secondary hover:text-themeText-primary transition-colors">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Cart Items (Scrollable) -->
+      <div id="cart-drawer-items" class="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
+        <!-- Dynamically populated cart items -->
+      </div>
+
+      <!-- Cart Footer & Calculations -->
+      <div class="border-t border-themeText-muted/10 pt-4 space-y-4">
+        <!-- Coupon Section -->
+        <div class="flex gap-2">
+          <input type="text" id="coupon-input" placeholder="Promo Code (e.g. SAVE10)" 
+            class="flex-1 px-4 py-2 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+          <button id="apply-coupon-btn" class="px-4 py-2 bg-brand-primary hover:bg-brand-hover text-white rounded-xl text-sm font-semibold transition-all">Apply</button>
+        </div>
+        <div id="coupon-status" class="text-xs hidden"></div>
+
+        <!-- Calculations -->
+        <div class="space-y-2 text-sm text-themeText-secondary">
+          <div class="flex justify-between">
+            <span>Subtotal</span>
+            <span id="cart-subtotal" class="font-semibold text-themeText-primary">₹0.00</span>
+          </div>
+          <div id="cart-discount-row" class="flex justify-between text-emerald-500 hidden">
+            <span>Discount</span>
+            <span id="cart-discount">-₹0.00</span>
+          </div>
+          <div class="flex justify-between">
+            <span>GST (18%)</span>
+            <span id="cart-tax" class="font-semibold text-themeText-primary">₹0.00</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Shipping</span>
+            <span id="cart-shipping" class="font-semibold text-themeText-primary">₹0.00</span>
+          </div>
+          <div class="flex justify-between text-base font-bold text-themeText-primary pt-2 border-t border-dashed border-themeText-muted/10">
+            <span>Total</span>
+            <span id="cart-total" class="text-brand-primary">₹0.00</span>
+          </div>
+        </div>
+
+        <!-- Checkout Button -->
+        <button id="checkout-btn" class="w-full py-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-2xl hover:opacity-90 shadow-lg shadow-brand-primary/25 hover:shadow-brand-primary/35 transition-all flex items-center justify-center gap-2">
+          Secure Checkout <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- --- USER PROFILE PANEL --- -->
+  <div id="profile-panel-overlay" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+    <div id="profile-panel" class="fixed top-0 bottom-0 right-0 w-full sm:w-[480px] bg-themeBg-secondary flex flex-col shadow-2xl translate-x-full transition-transform duration-300">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 border-b border-themeText-muted/10">
+        <div class="flex items-center gap-3">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" alt="Avatar" class="w-12 h-12 rounded-full object-cover border-2 border-brand-primary">
+          <div>
+            <h2 class="text-lg font-display font-bold text-themeText-primary" data-user-name>User</h2>
+            <p class="text-xs text-themeText-muted" data-user-email>user@example.com</p>
+          </div>
+        </div>
+        <button id="profile-panel-close" class="p-2 text-themeText-secondary hover:text-themeText-primary transition-colors">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-themeText-muted/10 bg-themeBg-primary/40">
+        <button class="profile-tab flex-1 py-3 text-sm font-semibold relative transition-colors duration-200" data-tab="orders" style="color:var(--accent);">
+          <i class="fa-solid fa-box-open mr-1.5 text-xs"></i>My Orders
+          <span class="profile-tab-bar absolute bottom-0 left-0 right-0 h-0.5" style="background:var(--accent);"></span>
+        </button>
+        <button class="profile-tab flex-1 py-3 text-sm font-semibold relative transition-colors duration-200" data-tab="details" style="color:var(--text-secondary);">
+          <i class="fa-solid fa-user mr-1.5 text-xs"></i>Account Details
+          <span class="profile-tab-bar absolute bottom-0 left-0 right-0 h-0.5 opacity-0" style="background:var(--accent);"></span>
+        </button>
+      </div>
+
+      <!-- Tab Content (scrollable) -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-4">
+
+        <!-- ORDERS TAB -->
+        <div id="profile-tab-orders" class="profile-tab-content space-y-4">
+
+          <!-- Pending Orders -->
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-widest text-themeText-muted mb-3 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span> Pending Orders
+            </h3>
+            <div class="space-y-3" id="pending-orders-list">
+              <div class="glass-card p-4 border border-amber-400/20 bg-amber-50/5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-themeText-primary">#ORD-2026-0041</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/15 text-amber-500">Pending</span>
+                </div>
+                <p class="text-xs text-themeText-secondary mb-1">Rolex Submariner Date Black Dial</p>
+                <div class="flex justify-between text-xs text-themeText-muted">
+                  <span>Qty: 1</span>
+                  <span class="font-semibold text-themeText-primary">₹9,50,000</span>
+                </div>
+                <p class="text-[10px] text-themeText-muted mt-2">Estimated delivery: Jul 10, 2026</p>
+              </div>
+              <div class="glass-card p-4 border border-amber-400/20 bg-amber-50/5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-themeText-primary">#ORD-2026-0038</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/15 text-amber-500">Pending</span>
+                </div>
+                <p class="text-xs text-themeText-secondary mb-1">Omega Seamaster Professional 300M</p>
+                <div class="flex justify-between text-xs text-themeText-muted">
+                  <span>Qty: 1</span>
+                  <span class="font-semibold text-themeText-primary">₹4,80,000</span>
+                </div>
+                <p class="text-[10px] text-themeText-muted mt-2">Estimated delivery: Jul 12, 2026</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Completed Orders -->
+          <div class="pt-2">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-themeText-muted mb-3 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Completed Orders
+            </h3>
+            <div class="space-y-3" id="completed-orders-list">
+              <div class="glass-card p-4 border border-emerald-500/20 bg-emerald-50/5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-themeText-primary">#ORD-2026-0021</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-500">Completed</span>
+                </div>
+                <p class="text-xs text-themeText-secondary mb-1">Aura Sound-Cancelling Headphones</p>
+                <div class="flex justify-between text-xs text-themeText-muted">
+                  <span>Qty: 2</span>
+                  <span class="font-semibold text-themeText-primary">₹31,998</span>
+                </div>
+                <p class="text-[10px] text-themeText-muted mt-2">Delivered on Jun 20, 2026</p>
+              </div>
+              <div class="glass-card p-4 border border-emerald-500/20 bg-emerald-50/5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-themeText-primary">#ORD-2026-0015</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-500">Completed</span>
+                </div>
+                <p class="text-xs text-themeText-secondary mb-1">Jordan Air Retro Court Sneakers × Classic Oxford Cotton Shirt</p>
+                <div class="flex justify-between text-xs text-themeText-muted">
+                  <span>Qty: 1 each</span>
+                  <span class="font-semibold text-themeText-primary">₹21,498</span>
+                </div>
+                <p class="text-[10px] text-themeText-muted mt-2">Delivered on Jun 5, 2026</p>
+              </div>
+              <div class="glass-card p-4 border border-emerald-500/20 bg-emerald-50/5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-themeText-primary">#ORD-2026-0007</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-500">Completed</span>
+                </div>
+                <p class="text-xs text-themeText-secondary mb-1">Quantum Smart Watch Series X</p>
+                <div class="flex justify-between text-xs text-themeText-muted">
+                  <span>Qty: 1</span>
+                  <span class="font-semibold text-themeText-primary">₹24,999</span>
+                </div>
+                <p class="text-[10px] text-themeText-muted mt-2">Delivered on May 18, 2026</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCOUNT DETAILS TAB -->
+        <div id="profile-tab-details" class="profile-tab-content hidden space-y-5">
+
+          <!-- Email -->
+          <div class="glass-card p-4 border border-themeText-muted/10">
+            <div class="flex items-center gap-3 mb-1">
+              <i class="fa-solid fa-envelope text-brand-primary text-sm"></i>
+              <span class="text-xs font-bold uppercase tracking-widest text-themeText-muted">Email</span>
+            </div>
+            <p class="text-sm font-semibold text-themeText-primary pl-6" data-user-email>user@example.com</p>
+          </div>
+
+          <!-- Address -->
+          <div class="glass-card p-4 border border-themeText-muted/10" id="address-card">
+
+            <!-- ── VIEW MODE ───────────────────────────────── -->
+            <div id="address-view-mode">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-3">
+                  <i class="fa-solid fa-location-dot text-brand-primary text-sm"></i>
+                  <span class="text-xs font-bold uppercase tracking-widest text-themeText-muted">Shipping Address</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <!-- View saved address on Google Maps -->
+                  <button id="view-on-map-btn"
+                    class="hidden flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-emerald-500 border border-emerald-500/30 hover:bg-emerald-500/10 transition-all">
+                    <i class="fa-solid fa-map text-[11px]"></i> Map
+                  </button>
+                  <button id="address-edit-btn"
+                    class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-brand-primary border border-brand-primary/30 hover:bg-brand-primary/10 transition-all">
+                    <i class="fa-solid fa-pen-to-square text-[11px]"></i> Edit
+                  </button>
+                </div>
+              </div>
+              <div id="address-display" class="pl-6 space-y-0.5">
+                <p class="text-sm font-semibold text-themeText-primary" id="addr-name-display" data-user-name>User</p>
+                <p class="text-xs text-themeText-secondary" id="addr-street-display">123, Brigade Road, Koramangala</p>
+                <p class="text-xs text-themeText-secondary" id="addr-city-display">Bengaluru, Karnataka — 560034</p>
+                <p class="text-xs text-themeText-secondary" id="addr-country-display">India</p>
+              </div>
+            </div>
+
+            <!-- ── EDIT MODE ───────────────────────────────── -->
+            <div id="address-edit-mode" class="hidden">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <i class="fa-solid fa-location-dot text-brand-primary text-sm"></i>
+                  <span class="text-xs font-bold uppercase tracking-widest text-themeText-muted">Edit Address</span>
+                </div>
+              </div>
+
+
+              <form id="address-edit-form" class="space-y-2.5">
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">First Name</label>
+                    <input id="addr-first-name" type="text" placeholder="First Name"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">Last Name</label>
+                    <input id="addr-last-name" type="text" placeholder="Last Name"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">House / Flat Number</label>
+                    <input id="addr-house-number" type="text" placeholder="e.g. 12"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">Building Name</label>
+                    <input id="addr-building-name" type="text" placeholder="e.g. Skyline Apartments"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">Street / Road</label>
+                    <input id="addr-street" type="text" placeholder="e.g. Brigade Road"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">Area / Locality</label>
+                    <input id="addr-area" type="text" placeholder="e.g. Koramangala"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">Landmark</label>
+                  <input id="addr-landmark" type="text" placeholder="e.g. Near Metro Station"
+                    class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">City</label>
+                    <input id="addr-city" type="text" placeholder="City"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">District</label>
+                    <input id="addr-district" type="text" placeholder="District"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">State</label>
+                    <input id="addr-state" type="text" placeholder="State"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">PIN Code</label>
+                    <input id="addr-pin" type="text" placeholder="560034" maxlength="10"
+                      class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-themeText-muted mb-1">Country</label>
+                  <input id="addr-country" type="text" placeholder="India"
+                    class="w-full px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-brand-primary transition-all">
+                </div>
+
+                <!-- Action buttons -->
+                <div class="flex gap-2 pt-1">
+                  <button type="submit" id="address-save-btn"
+                    class="flex-1 py-2 bg-brand-primary hover:bg-brand-hover text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-check"></i> Save Address
+                  </button>
+                  <button type="button" id="address-cancel-btn"
+                    class="flex-1 py-2 border border-themeText-muted/20 hover:border-brand-primary text-themeText-secondary text-xs font-bold rounded-xl transition-all">
+                    Cancel
+                  </button>
+                </div>
+
+              </form>
+            </div>
+
+          </div>
+
+          <!-- Payment Method -->
+          <div class="glass-card p-4 border border-themeText-muted/10">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fa-solid fa-credit-card text-brand-primary text-sm"></i>
+              <span class="text-xs font-bold uppercase tracking-widest text-themeText-muted">Payment Methods</span>
+            </div>
+            <div class="space-y-2 pl-6">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-6 rounded bg-gradient-to-r from-blue-600 to-blue-400 flex items-center justify-center">
+                  <i class="fa-brands fa-cc-visa text-white text-xs"></i>
+                </div>
+                <span class="text-sm font-semibold text-themeText-primary">Visa •••• 4512</span>
+                <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 font-bold">Default</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-6 rounded bg-gradient-to-r from-orange-500 to-red-400 flex items-center justify-center">
+                  <i class="fa-brands fa-cc-mastercard text-white text-xs"></i>
+                </div>
+                <span class="text-sm font-semibold text-themeText-primary">Mastercard •••• 8831</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-6 rounded bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center">
+                  <i class="fa-solid fa-mobile text-white text-xs"></i>
+                </div>
+                <span id="profile-upi-label" class="text-sm font-semibold text-themeText-primary">UPI — loading…</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Logout Button -->
+          <div class="glass-card p-4 border border-red-500/20 bg-red-500/5">
+            <button id="logout-btn" data-logout class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold rounded-xl hover:opacity-90 transition-all">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              Logout
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- --- MAIN VIEW CONTENT CONTAINER --- -->
+  <main class="pt-36 min-h-screen">
+
+    <!-- ========================================================= -->
+    <!-- 1. HOME VIEW -->
+    <!-- ========================================================= -->
+    <section id="home-view" class="view-section active">
+      
+      <!-- Hero Slider Section -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        <div class="swiper hero-swiper rounded-3xl overflow-hidden shadow-2xl relative h-[400px] sm:h-[500px] lg:h-[600px] border border-white/5">
+          <div class="swiper-wrapper">
+
+            <!-- Slide 1 -->
+            <div class="swiper-slide relative bg-slate-950 flex items-center px-8 sm:px-16 overflow-hidden">
+              <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1200&auto=format&fit=crop" alt="Premium Apparel" class="w-full h-full object-cover opacity-40">
+                <div class="absolute inset-0 hero-gradient-overlay"></div>
+              </div>
+              <div class="relative z-10 max-w-xl text-white">
+                <span class="inline-block px-3 py-1 bg-brand-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">New Arrivals</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-black leading-tight mb-4">The Art of <br><span class="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">Minimal Living</span></h1>
+                <p class="text-slate-300 text-sm sm:text-base mb-8">Explore our exclusive collection of luxury clothing and accessories, tailored for comfort and elegance.</p>
+                <a href="#shop" class="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full font-bold hover:scale-105 hover:shadow-xl transition-all">
+                  Shop Collection <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="swiper-slide relative bg-slate-950 flex items-center px-8 sm:px-16 overflow-hidden">
+              <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1468495244123-6c6c332eeece?q=80&w=1200&auto=format&fit=crop" alt="Future Tech" class="w-full h-full object-cover opacity-40">
+                <div class="absolute inset-0 hero-gradient-overlay"></div>
+              </div>
+              <div class="relative z-10 max-w-xl text-white">
+                <span class="inline-block px-3 py-1 bg-brand-secondary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">Ultimate Sound</span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-black leading-tight mb-4">Futuristic <br><span class="bg-gradient-to-r from-brand-secondary to-pink-500 bg-clip-text text-transparent">Audiophile Gear</span></h1>
+                <p class="text-slate-300 text-sm sm:text-base mb-8">Immerse yourself in crystal clear high-fidelity sound. Explore active noise-cancelling headphones and speakers.</p>
+                <a href="#shop" class="inline-flex items-center gap-2 bg-gradient-to-r from-brand-primary to-brand-secondary text-white px-6 py-3 rounded-full font-bold hover:scale-105 hover:shadow-xl transition-all">
+                  Browse Tech <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-next hidden sm:flex"></div>
+          <div class="swiper-button-prev hidden sm:flex"></div>
+        </div>
+      </div>
+
+      <!-- Flash Sale Section -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        <div class="glass-card p-6 sm:p-8 bg-gradient-to-br from-red-500/5 to-orange-500/5 border border-red-500/10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 text-xl animate-pulse">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div>
+              <h2 class="text-2xl font-display font-bold">AURA Flash Deals</h2>
+              <p class="text-sm text-themeText-secondary">Grab premium products at unbelievable discounts before time runs out!</p>
+            </div>
+          </div>
+          
+          <!-- Countdown Timer -->
+          <div class="flex items-center gap-3">
+            <div class="flex flex-col items-center">
+              <div id="timer-hours" class="w-12 h-12 bg-themeBg-primary border border-themeText-muted/20 rounded-xl flex items-center justify-center font-bold font-display text-lg">02</div>
+              <span class="text-[10px] text-themeText-muted uppercase font-bold mt-1">Hrs</span>
+            </div>
+            <span class="text-xl font-bold text-red-500 animate-pulse">:</span>
+            <div class="flex flex-col items-center">
+              <div id="timer-minutes" class="w-12 h-12 bg-themeBg-primary border border-themeText-muted/20 rounded-xl flex items-center justify-center font-bold font-display text-lg">45</div>
+              <span class="text-[10px] text-themeText-muted uppercase font-bold mt-1">Min</span>
+            </div>
+            <span class="text-xl font-bold text-red-500 animate-pulse">:</span>
+            <div class="flex flex-col items-center">
+              <div id="timer-seconds" class="w-12 h-12 bg-themeBg-primary border border-themeText-muted/20 rounded-xl flex items-center justify-center font-bold font-display text-lg">59</div>
+              <span class="text-[10px] text-themeText-muted uppercase font-bold mt-1">Sec</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Section -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-3xl font-display font-extrabold">Browse Categories</h2>
+          <a href="#shop" class="text-brand-primary text-sm font-semibold hover:underline">View All Shop <i class="fa-solid fa-angle-right"></i></a>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6" id="categories-grid">
+          <!-- Dynamically populated category cards -->
+        </div>
+      </div>
+
+      <!-- Trending Section -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-3xl font-display font-extrabold">Trending Products</h2>
+          <div class="flex items-center gap-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-semibold text-themeText-muted uppercase tracking-widest">Live Updates</span>
+          </div>
+        </div>
+        <div class="swiper trending-swiper p-4">
+          <div class="swiper-wrapper" id="trending-products-container">
+            <!-- Dynamically populated trending cards -->
+          </div>
+          <div class="swiper-pagination !-bottom-2"></div>
+        </div>
+      </div>
+
+      <!-- CTA Promotional banner -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        <div class="relative rounded-3xl overflow-hidden h-64 sm:h-80 bg-slate-900 flex items-center px-8 sm:px-12 border border-white/5">
+          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1000&auto=format&fit=crop" alt="Acoustic Banner" class="absolute right-0 top-0 w-1/2 h-full object-cover opacity-50 hidden md:block select-none pointer-events-none">
+          <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent z-0"></div>
+          <div class="relative z-10 max-w-lg text-white">
+            <h3 class="text-3xl sm:text-4xl font-display font-extrabold mb-3">Join the AURA Club</h3>
+            <p class="text-slate-300 text-sm sm:text-base mb-6">Subscribe to our newsletter to receive early access to launches, member-only discounts, and personalized styling recommendations.</p>
+            <form id="newsletter-form" class="flex gap-2 max-w-md">
+              <input type="email" placeholder="Your email address" required 
+                class="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-white">
+              <button type="submit" class="px-6 py-3 bg-brand-primary hover:bg-brand-hover text-white rounded-xl text-sm font-semibold transition-all">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 2. PRODUCT CATALOG (SHOP) VIEW -->
+    <!-- ========================================================= -->
+    <section id="shop-view" class="view-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        
+        <!-- Catalog Header -->
+        <div class="flex flex-col gap-4 mb-8">
+          <!-- Top row: title + breadcrumbs -->
+          <div>
+            <nav id="shop-breadcrumbs" class="flex items-center flex-wrap gap-2 text-xs text-themeText-muted mb-2">
+              <!-- Dynamically populated interactive breadcrumbs (Feature 5) -->
+            </nav>
+            <h1 class="text-3xl sm:text-4xl font-display font-extrabold">Shop Collection</h1>
+          </div>
+          
+          <!-- Bottom row: count + controls — always wraps cleanly -->
+          <div class="flex flex-wrap items-center gap-3">
+            <!-- Product Count Badge -->
+            <div class="flex items-center gap-2 px-3 py-2 rounded-xl border border-themeText-muted/20 bg-themeBg-secondary flex-shrink-0">
+              <i class="fa-solid fa-layer-group text-brand-primary text-xs"></i>
+              <span id="product-count" class="text-xs sm:text-sm font-bold text-themeText-primary whitespace-nowrap">Showing 0 products</span>
+            </div>
+
+            <!-- Spacer pushes controls right on larger screens -->
+            <div class="flex-1 hidden sm:block"></div>
+
+            <!-- Filter Mobile Trigger -->
+            <button id="mobile-filter-trigger" class="lg:hidden flex items-center gap-2 px-4 py-2 border border-themeText-muted/20 rounded-xl text-sm font-semibold hover:border-brand-primary transition-all flex-shrink-0">
+              <i class="fa-solid fa-sliders"></i> <span class="hidden xs:inline">Filters</span>
+            </button>
+              
+            <!-- Sort Dropdown -->
+            <div class="relative flex-shrink-0">
+              <i class="fa-solid fa-arrow-up-wide-short absolute left-3 top-1/2 -translate-y-1/2 text-brand-primary text-xs pointer-events-none z-10"></i>
+              <select id="sort-select" class="appearance-none pl-9 pr-8 py-2 bg-themeBg-secondary border border-themeText-muted/20 rounded-xl text-xs sm:text-sm font-semibold focus:outline-none focus:border-brand-primary text-themeText-primary cursor-pointer transition-all hover:border-brand-primary min-w-[160px]">
+                <option value="default">Sort: Default</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="rating-desc">Rating: Highest</option>
+                <option value="newest">Newest First</option>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-themeText-muted pointer-events-none text-xs"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+          
+          <!-- FILTER SIDEBAR (Desktop) -->
+          <aside id="filter-sidebar" class="w-full lg:w-72 flex-shrink-0 bg-themeBg-secondary border border-themeText-muted/10 rounded-3xl p-6 hidden lg:block glass-panel">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-lg font-display font-bold"><i class="fa-solid fa-sliders text-brand-primary mr-2"></i> Filters</h3>
+              <button id="clear-filters-btn" class="text-xs font-semibold text-brand-primary hover:underline">Clear All</button>
+            </div>
+            
+            <div class="space-y-6">
+              
+              <!-- Search (Inside Sidebar) -->
+              <div>
+                <h4 class="text-sm font-bold text-themeText-primary uppercase tracking-wider mb-3">Keyword</h4>
+                <div class="relative">
+                  <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-themeText-muted"></i>
+                  <input type="text" id="sidebar-search-input" placeholder="Search item..." 
+                    class="w-full pl-10 pr-10 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  <button id="sidebar-voice-search-btn" class="absolute right-4 top-1/2 -translate-y-1/2 text-themeText-muted hover:text-brand-primary transition-colors">
+                    <i class="fa-solid fa-microphone"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Categories -->
+              <div>
+                <h4 class="text-sm font-bold text-themeText-primary uppercase tracking-wider mb-3">Categories</h4>
+                <div class="flex flex-col gap-2.5 text-sm text-themeText-secondary" id="sidebar-categories-list">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+
+              <!-- Price Slider -->
+              <div>
+                <div class="flex justify-between items-center mb-3">
+                  <h4 class="text-sm font-bold text-themeText-primary uppercase tracking-wider">Price Range</h4>
+                  <span id="price-slider-value" class="text-xs bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded font-bold">₹0 - ₹200000</span>
+                </div>
+                <input type="range" id="price-slider" min="0" max="2000" step="10" value="2000" class="slider-accent">
+                <div class="flex justify-between text-[10px] text-themeText-muted mt-2">
+                  <span>Min: ₹0</span>
+                  <span>Max: ₹2,00,000+</span>
+                </div>
+              </div>
+
+              <!-- Brand Filter -->
+              <div>
+                <h4 class="text-sm font-bold text-themeText-primary uppercase tracking-wider mb-3">Brand</h4>
+                <div class="flex flex-col gap-2.5 text-sm text-themeText-secondary" id="sidebar-brands-list">
+                  <!-- Dynamically populated brand checkboxes -->
+                </div>
+              </div>
+
+              <!-- Rating Filter -->
+              <div>
+                <h4 class="text-sm font-bold text-themeText-primary uppercase tracking-wider mb-3">Customer Rating</h4>
+                <div class="flex flex-col gap-2">
+                  <label class="flex items-center gap-2.5 text-sm text-themeText-secondary hover:text-themeText-primary cursor-pointer">
+                    <input type="radio" name="rating-filter" value="4" class="w-4 h-4 text-brand-primary focus:ring-brand-primary border-themeText-muted/20 rounded">
+                    <span class="flex items-center gap-1">4.0 <i class="fa-solid fa-star text-yellow-400 text-xs"></i> & Up</span>
+                  </label>
+                  <label class="flex items-center gap-2.5 text-sm text-themeText-secondary hover:text-themeText-primary cursor-pointer">
+                    <input type="radio" name="rating-filter" value="3" class="w-4 h-4 text-brand-primary focus:ring-brand-primary border-themeText-muted/20 rounded">
+                    <span class="flex items-center gap-1">3.0 <i class="fa-solid fa-star text-yellow-400 text-xs"></i> & Up</span>
+                  </label>
+                  <label class="flex items-center gap-2.5 text-sm text-themeText-secondary hover:text-themeText-primary cursor-pointer">
+                    <input type="radio" name="rating-filter" value="all" checked class="w-4 h-4 text-brand-primary focus:ring-brand-primary border-themeText-muted/20 rounded">
+                    <span>Show All</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Availability -->
+              <div>
+                <h4 class="text-sm font-bold text-themeText-primary uppercase tracking-wider mb-3">Availability</h4>
+                <label class="flex items-center gap-2.5 text-sm text-themeText-secondary hover:text-themeText-primary cursor-pointer">
+                  <input type="checkbox" id="stock-filter" class="w-4 h-4 rounded text-brand-primary focus:ring-brand-primary border-themeText-muted/20">
+                  <span>In Stock Only</span>
+                </label>
+              </div>
+
+            </div>
+          </aside>
+
+          <!-- MOBILE FILTER DRAWER -->
+          <div id="mobile-filter-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden">
+            <div class="fixed top-0 bottom-0 left-0 w-80 bg-themeBg-secondary p-6 flex flex-col justify-between shadow-2xl -translate-x-full transition-transform duration-300">
+              <div class="flex items-center justify-between pb-4 border-b border-themeText-muted/10 mb-6">
+                <h3 class="text-lg font-display font-bold"><i class="fa-solid fa-sliders text-brand-primary mr-2"></i> Filters</h3>
+                <button id="mobile-filter-close" class="text-themeText-secondary hover:text-themeText-primary">
+                  <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+              </div>
+              <div class="flex-1 overflow-y-auto space-y-6 pr-1" id="mobile-filter-content">
+                <!-- Portal content from desktop sidebar is inserted here via JS -->
+              </div>
+              <div class="border-t border-themeText-muted/10 pt-4 mt-4 flex gap-4">
+                <button id="mobile-filter-clear-btn" class="flex-1 py-2.5 border border-themeText-muted/20 rounded-xl text-sm font-semibold text-themeText-secondary hover:text-themeText-primary">Clear</button>
+                <button id="mobile-filter-apply-btn" class="flex-1 py-2.5 bg-brand-primary hover:bg-brand-hover text-white rounded-xl text-sm font-semibold">Apply</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRODUCT CATALOG GRID -->
+          <div class="flex-1 w-full">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="product-grid">
+              <!-- Dynamically populated product cards or skeleton loaders -->
+            </div>
+            
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden flex-col items-center justify-center py-16 text-center">
+              <div class="w-20 h-20 rounded-full bg-themeText-muted/10 flex items-center justify-center text-themeText-muted text-3xl mb-4">
+                <i class="fa-solid fa-magnifying-glass-minus"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">No Products Found</h3>
+              <p class="text-themeText-secondary text-sm max-w-md">We couldn't find any products matching your current filters. Try relaxing your filters or typing a different search query.</p>
+            </div>
+
+            <!-- Pagination or Load More -->
+            <div id="load-more-container" class="flex justify-center mt-12 hidden">
+              <button id="load-more-btn" class="px-8 py-3 bg-themeBg-secondary border border-themeText-muted/20 hover:border-brand-primary text-themeText-primary rounded-xl font-semibold text-sm transition-all flex items-center gap-2">
+                Load More Products <i class="fa-solid fa-rotate"></i>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 3. WISHLIST VIEW -->
+    <!-- ========================================================= -->
+    <section id="wishlist-view" class="view-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        
+        <div class="mb-8">
+          <nav class="flex items-center gap-2 text-xs text-themeText-muted mb-2">
+            <a href="#home" class="hover:text-brand-primary">Home</a>
+            <i class="fa-solid fa-angle-right text-[9px]"></i>
+            <span class="text-themeText-secondary">Wishlist</span>
+          </nav>
+          <h1 class="text-4xl font-display font-extrabold">Your Wishlist</h1>
+          <p class="text-sm text-themeText-secondary mt-1">Keep track of items you love and add them to your cart anytime.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="wishlist-grid">
+          <!-- Dynamically populated wishlist items -->
+        </div>
+
+        <!-- Wishlist Empty State -->
+        <div id="wishlist-empty-state" class="hidden flex-col items-center justify-center py-20 text-center">
+          <div class="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 text-3xl mb-4">
+            <i class="fa-regular fa-heart"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Your Wishlist is Empty</h3>
+          <p class="text-themeText-secondary text-sm max-w-sm mb-6">Browse our products and click the heart icon on any product to save it here.</p>
+          <a href="#shop" class="px-6 py-3 bg-brand-primary hover:bg-brand-hover text-white rounded-xl text-sm font-semibold transition-all">Go Shopping</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 4. COMPARE VIEW -->
+    <!-- ========================================================= -->
+    <section id="compare-view" class="view-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        
+        <div class="mb-8">
+          <nav class="flex items-center gap-2 text-xs text-themeText-muted mb-2">
+            <a href="#home" class="hover:text-brand-primary">Home</a>
+            <i class="fa-solid fa-angle-right text-[9px]"></i>
+            <span class="text-themeText-secondary">Compare Products</span>
+          </nav>
+          <h1 class="text-4xl font-display font-extrabold">Compare Products</h1>
+          <p class="text-sm text-themeText-secondary mt-1">Side-by-side comparison to help you make the best purchase decision.</p>
+        </div>
+
+        <div class="glass-card overflow-hidden border border-themeText-muted/10">
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-left text-sm text-themeText-secondary">
+              <thead class="bg-themeBg-secondary border-b border-themeText-muted/10 text-themeText-primary">
+                <tr id="compare-table-headers">
+                  <th class="p-6 font-bold uppercase tracking-wider w-1/4">Features</th>
+                  <!-- Dynamic product headers -->
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-themeText-muted/10" id="compare-table-body">
+                <!-- Dynamically populated compare rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Compare Empty State -->
+        <div id="compare-empty-state" class="hidden flex-col items-center justify-center py-20 text-center">
+          <div class="w-20 h-20 rounded-full bg-themeText-muted/10 flex items-center justify-center text-themeText-muted text-3xl mb-4">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">No Products Selected</h3>
+          <p class="text-themeText-secondary text-sm max-w-sm mb-6">Select at least two products in the shop catalog to compare their specifications side by side.</p>
+          <a href="#shop" class="px-6 py-3 bg-brand-primary hover:bg-brand-hover text-white rounded-xl text-sm font-semibold transition-all">Go to Shop</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 5. CHECKOUT VIEW -->
+    <!-- ========================================================= -->
+    <section id="checkout-view" class="view-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        
+        <div class="mb-8">
+          <nav class="flex items-center gap-2 text-xs text-themeText-muted mb-2">
+            <a href="#home" class="hover:text-brand-primary">Home</a>
+            <i class="fa-solid fa-angle-right text-[9px]"></i>
+            <span class="text-themeText-secondary">Checkout</span>
+          </nav>
+          <h1 class="text-4xl font-display font-extrabold">Complete Checkout</h1>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Checkout Form -->
+          <div class="lg:col-span-8 bg-themeBg-secondary border border-themeText-muted/10 rounded-3xl p-6 sm:p-8 glass-panel">
+            <form id="checkout-form" class="space-y-6">
+              
+              <!-- Personal Details -->
+              <div>
+                <h3 class="text-lg font-display font-bold mb-4 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs">1</span> Shipping Address</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">First Name</label>
+                    <input type="text" id="checkout-first-name" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Last Name</label>
+                    <input type="text" id="checkout-last-name" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Email Address</label>
+                    <input type="email" id="checkout-email" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Street Address</label>
+                    <input type="text" id="checkout-street" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">City</label>
+                    <input type="text" id="checkout-city" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">PIN Code</label>
+                    <input type="text" id="checkout-pin" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  </div>
+                </div>
+              </div>
+
+              <hr class="border-themeText-muted/10">
+
+              <!-- Payment Method -->
+              <div>
+                <h3 class="text-lg font-display font-bold mb-4 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs">2</span> Payment Method</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <label class="flex flex-col items-center justify-center p-4 border border-brand-primary bg-brand-primary/5 rounded-2xl cursor-pointer text-center hover:border-brand-primary transition-all">
+                    <input type="radio" name="payment-method" value="card" checked class="sr-only">
+                    <i class="fa-solid fa-credit-card text-2xl text-brand-primary mb-2"></i>
+                    <span class="text-sm font-semibold text-themeText-primary">Credit / Debit Card</span>
+                  </label>
+                  <label class="flex flex-col items-center justify-center p-4 border border-themeText-muted/20 rounded-2xl cursor-pointer text-center hover:border-brand-primary transition-all">
+                    <input type="radio" name="payment-method" value="upi" class="sr-only">
+                    <i class="fa-solid fa-mobile-screen-button text-2xl text-themeText-muted mb-2"></i>
+                    <span class="text-sm font-semibold text-themeText-primary">UPI / NetBanking</span>
+                  </label>
+                  <label class="flex flex-col items-center justify-center p-4 border border-themeText-muted/20 rounded-2xl cursor-pointer text-center hover:border-brand-primary transition-all">
+                    <input type="radio" name="payment-method" value="cod" class="sr-only">
+                    <i class="fa-solid fa-truck-ramp-box text-2xl text-themeText-muted mb-2"></i>
+                    <span class="text-sm font-semibold text-themeText-primary">Cash on Delivery</span>
+                  </label>
+                </div>
+                
+                <!-- Card Inputs (Visible if Card Selected) -->
+                <div id="card-details-fields" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                  <div class="sm:col-span-3">
+                    <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Card Number</label>
+                    <input type="text" placeholder="1234 5678 9012 3456" class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Expiration Date</label>
+                    <input type="text" placeholder="MM/YY" class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">CVV</label>
+                    <input type="password" placeholder="***" class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" class="w-full py-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-primary/20">
+                <i class="fa-solid fa-lock"></i> Authorize Secure Payment
+              </button>
+
+            </form>
+          </div>
+
+          <!-- Checkout Order Summary -->
+          <div class="lg:col-span-4 bg-themeBg-secondary border border-themeText-muted/10 rounded-3xl p-6 glass-panel">
+            <h3 class="text-lg font-display font-bold mb-4 border-b border-themeText-muted/10 pb-3">Order Summary</h3>
+            <div id="checkout-summary-items" class="divide-y divide-themeText-muted/5 max-h-80 overflow-y-auto pr-1 mb-4">
+              <!-- Dynamically populated summary items -->
+            </div>
+            
+            <!-- Financial breakdown -->
+            <div class="space-y-3 text-sm text-themeText-secondary border-t border-themeText-muted/10 pt-4">
+              <div class="flex justify-between">
+                <span>Subtotal</span>
+                <span id="checkout-subtotal" class="font-semibold text-themeText-primary">₹0.00</span>
+              </div>
+              <div id="checkout-discount-row" class="flex justify-between text-emerald-500 hidden">
+                <span>Discount</span>
+                <span id="checkout-discount">-₹0.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span>GST (18%)</span>
+                <span id="checkout-tax" class="font-semibold text-themeText-primary">₹0.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Shipping</span>
+                <span id="checkout-shipping" class="font-semibold text-themeText-primary">₹0.00</span>
+              </div>
+              <div class="flex justify-between text-base font-bold text-themeText-primary pt-3 border-t border-dashed border-themeText-muted/10">
+                <span>Grand Total</span>
+                <span id="checkout-total" class="text-brand-primary text-lg">₹0.00</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 6. ORDER CONFIRMATION VIEW -->
+    <!-- ========================================================= -->
+    <section id="success-view" class="view-section">
+      <div class="max-w-xl mx-auto px-4 py-16 text-center">
+        <div class="glass-card p-8 sm:p-12 glass-panel border border-white/5 relative overflow-hidden">
+          
+          <!-- Confetti Background simulated via CSS particles or simple GSAP -->
+          <div class="success-checkmark mb-6">
+            <i class="fa-solid fa-check text-3xl"></i>
+          </div>
+          
+          <h1 class="text-3xl font-display font-black mb-3">Order Placed Successfully!</h1>
+          <p class="text-themeText-secondary text-sm mb-6">Thank you for your purchase. We are processing your order and will notify you as soon as it ships.</p>
+          
+          <!-- Order Details Card -->
+          <div class="bg-themeBg-primary/50 border border-themeText-muted/10 rounded-2xl p-6 text-left mb-8 space-y-3">
+            <div class="flex justify-between text-sm">
+              <span class="text-themeText-muted">Order ID:</span>
+              <span id="success-order-id" class="font-mono font-bold text-themeText-primary">#AURA-948271</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-themeText-muted">Est. Delivery:</span>
+              <span id="success-delivery-date" class="font-semibold text-themeText-primary">July 5, 2026</span>
+            </div>
+            <div class="flex justify-between text-sm border-t border-themeText-muted/10 pt-3">
+              <span class="text-themeText-primary font-semibold">Total Paid:</span>
+              <span id="success-order-total" class="font-bold text-brand-primary">₹0.00</span>
+            </div>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a href="#shop" class="flex-1 py-3 bg-brand-primary hover:bg-brand-hover text-white font-bold rounded-xl text-sm transition-all text-center">Continue Shopping</a>
+            <a href="#home" class="flex-1 py-3 bg-themeBg-primary border border-themeText-muted/20 hover:border-brand-primary text-themeText-primary font-bold rounded-xl text-sm transition-all text-center">Back to Home</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 7. ADMIN VIEW -->
+    <!-- ========================================================= -->
+    <section id="admin-view" class="view-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        
+        <!-- Admin Header Row -->
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-8 pt-2">
+          <div class="min-w-0">
+            <nav class="flex items-center gap-2 text-xs text-themeText-muted mb-2 flex-wrap">
+              <a href="#home" class="hover:text-brand-primary">Home</a>
+              <i class="fa-solid fa-angle-right text-[9px]"></i>
+              <span class="text-themeText-secondary">Admin Console</span>
+            </nav>
+            <h1 class="text-3xl sm:text-4xl font-display font-extrabold leading-tight">Product Inventory Manager</h1>
+          </div>
+          <!-- Add New Product — right-aligned desktop, full-width mobile -->
+          <div class="flex-shrink-0 w-full sm:w-auto">
+            <button id="add-product-modal-btn"
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-hover text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-lg shadow-brand-primary/25 hover:shadow-brand-primary/40 whitespace-nowrap">
+              <i class="fa-solid fa-plus"></i> Add New Product
+            </button>
+          </div>
+        </div>
+
+        <!-- Dashboard Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div class="glass-card p-6 border border-themeText-muted/10">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xl">
+                <i class="fa-solid fa-box"></i>
+              </div>
+              <span class="text-xs font-semibold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">+12 New</span>
+            </div>
+            <h3 class="text-2xl font-display font-bold" id="admin-total-products">0</h3>
+            <p class="text-xs text-themeText-secondary font-medium">Total Active Products</p>
+          </div>
+          <div class="glass-card p-6 border border-themeText-muted/10">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-brand-secondary/10 text-brand-secondary flex items-center justify-center text-xl">
+                <i class="fa-solid fa-chart-line"></i>
+              </div>
+              <span class="text-xs font-semibold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">+18.5%</span>
+            </div>
+            <h3 class="text-2xl font-display font-bold">₹12,48,920</h3>
+            <p class="text-xs text-themeText-secondary font-medium">Simulated Monthly Revenue</p>
+          </div>
+          <div class="glass-card p-6 border border-themeText-muted/10">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-users"></i>
+              </div>
+              <span class="text-xs font-semibold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">+8% MoM</span>
+            </div>
+            <h3 class="text-2xl font-display font-bold">3,892</h3>
+            <p class="text-xs text-themeText-secondary font-medium">Active Customer Accounts</p>
+          </div>
+          <div class="glass-card p-6 border border-themeText-muted/10">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <span class="text-xs font-semibold text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-full">Top 1%</span>
+            </div>
+            <h3 class="text-2xl font-display font-bold">4.85 / 5</h3>
+            <p class="text-xs text-themeText-secondary font-medium">Average Review Rating</p>
+          </div>
+        </div>
+
+        <!-- Inventory List / Tables -->
+        <div class="glass-card overflow-hidden border border-themeText-muted/10">
+          <div class="p-6 border-b border-themeText-muted/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h3 class="text-lg font-display font-bold">Product Catalog Registry</h3>
+            <div class="relative w-full sm:w-72">
+              <input type="text" id="admin-search-input" placeholder="Filter inventory..." 
+                class="w-full pl-10 pr-4 py-2 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-themeText-muted"></i>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-left text-sm text-themeText-secondary">
+              <thead class="bg-themeBg-secondary border-b border-themeText-muted/10 text-themeText-primary">
+                <tr>
+                  <th class="p-4 font-bold">Image</th>
+                  <th class="p-4 font-bold">Product Title</th>
+                  <th class="p-4 font-bold">Category</th>
+                  <th class="p-4 font-bold">Price</th>
+                  <th class="p-4 font-bold">Rating</th>
+                  <th class="p-4 font-bold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-themeText-muted/10" id="admin-product-table-body">
+                <!-- Dynamically populated table rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 8. ABOUT VIEW -->
+    <!-- ========================================================= -->
+    <section id="about-view" class="view-section">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 py-8 text-center">
+        <h1 class="text-5xl font-display font-extrabold mb-6">About AURA Store</h1>
+        <p class="text-lg text-themeText-secondary max-w-2xl mx-auto mb-12">We are dedicated to bringing you curated, ultra-premium goods that elevate your everyday lifestyle. Our design ethos is driven by simplicity, durability, and luxury.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="glass-card p-6 border border-themeText-muted/10">
+            <i class="fa-solid fa-gem text-4xl text-brand-primary mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">Premium Quality</h3>
+            <p class="text-sm text-themeText-secondary">We partner with global manufacturers to source only the finest materials.</p>
+          </div>
+          <div class="glass-card p-6 border border-themeText-muted/10">
+            <i class="fa-solid fa-leaf text-4xl text-brand-secondary mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">Sustainable Sourcing</h3>
+            <p class="text-sm text-themeText-secondary">Ethically manufactured items designed to leave a minimal environmental footprint.</p>
+          </div>
+          <div class="glass-card p-6 border border-themeText-muted/10">
+            <i class="fa-solid fa-shield-halved text-4xl text-pink-500 mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">Secured Payments</h3>
+            <p class="text-sm text-themeText-secondary">Industry-standard encryption guarantees 100% safe and secure shopping.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 9. CONTACT VIEW -->
+    <!-- ========================================================= -->
+    <section id="contact-view" class="view-section">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 py-8">
+        <div class="glass-card p-8 sm:p-12 glass-panel border border-white/5 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h1 class="text-3xl font-display font-extrabold mb-4">Get In Touch</h1>
+            <p class="text-sm text-themeText-secondary mb-6">Have questions or feedback? Drop us a line and our dedicated support team will get back to you within 24 hours.</p>
+            <div class="space-y-4 text-sm text-themeText-secondary">
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-location-dot text-brand-primary"></i>
+                <span>100 Premium Plaza, Tech City, Karnataka, India</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-phone text-brand-primary"></i>
+                <span>+91 98765 43210</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-envelope text-brand-primary"></i>
+                <span>support@aurastore.com</span>
+              </div>
+            </div>
+          </div>
+          <form id="contact-form" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Name</label>
+              <input type="text" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Email Address</label>
+              <input type="email" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Message</label>
+              <textarea rows="4" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary"></textarea>
+            </div>
+            <button type="submit" class="w-full py-3 bg-brand-primary hover:bg-brand-hover text-white font-bold rounded-xl text-sm transition-all">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 10. FAQ VIEW -->
+    <!-- ========================================================= -->
+    <section id="faq-view" class="view-section">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 py-8">
+        <h1 class="text-4xl font-display font-extrabold text-center mb-10">Frequently Asked Questions</h1>
+        <div class="space-y-4" id="faq-accordion">
+          <!-- FAQ 1 -->
+          <div class="glass-card border border-themeText-muted/10 overflow-hidden">
+            <button class="w-full px-6 py-4 text-left font-semibold flex items-center justify-between text-themeText-primary hover:bg-themeBg-secondary/50 transition-all">
+              <span>What is the average delivery time?</span>
+              <i class="fa-solid fa-plus text-xs transition-transform duration-300"></i>
+            </button>
+            <div class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out px-6 text-sm text-themeText-secondary bg-themeBg-primary/20">
+              <p class="py-4">Orders are processed within 24 hours. Domestic delivery takes between 3-5 business days, while international shipping can take 7-10 business days.</p>
+            </div>
+          </div>
+          <!-- FAQ 2 -->
+          <div class="glass-card border border-themeText-muted/10 overflow-hidden">
+            <button class="w-full px-6 py-4 text-left font-semibold flex items-center justify-between text-themeText-primary hover:bg-themeBg-secondary/50 transition-all">
+              <span>Can I return a product?</span>
+              <i class="fa-solid fa-plus text-xs transition-transform duration-300"></i>
+            </button>
+            <div class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out px-6 text-sm text-themeText-secondary bg-themeBg-primary/20">
+              <p class="py-4">Yes, we offer a 30-day hassle-free return policy. The item must be in its original packaging, unused, and with all tags attached.</p>
+            </div>
+          </div>
+          <!-- FAQ 3 -->
+          <div class="glass-card border border-themeText-muted/10 overflow-hidden">
+            <button class="w-full px-6 py-4 text-left font-semibold flex items-center justify-between text-themeText-primary hover:bg-themeBg-secondary/50 transition-all">
+              <span>How do I track my order?</span>
+              <i class="fa-solid fa-plus text-xs transition-transform duration-300"></i>
+            </button>
+            <div class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out px-6 text-sm text-themeText-secondary bg-themeBg-primary/20">
+              <p class="py-4">Once your order is shipped, you will receive an email containing a unique tracking link and tracking number to monitor your package in real-time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- --- FOOTER --- -->
+  <footer class="bg-themeBg-secondary border-t border-themeText-muted/10 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="font-display text-2xl font-extrabold tracking-wider bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent mb-4">
+            <i class="fa-solid fa-wand-magic-sparkles text-brand-primary"></i> AURA
+          </div>
+          <p class="text-sm text-themeText-secondary mb-4">Experience curated, premium lifestyle and fashion items. Built for the modern aesthetic.</p>
+          <div class="flex items-center gap-4 text-themeText-secondary text-lg">
+            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" class="hover:text-brand-primary transition-colors"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="hover:text-brand-primary transition-colors"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" class="hover:text-brand-primary transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" class="hover:text-brand-primary transition-colors"><i class="fa-brands fa-pinterest"></i></a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-themeText-primary uppercase tracking-wider mb-4">Quick Links</h4>
+          <ul class="space-y-2 text-sm text-themeText-secondary">
+            <li><a href="#shop" class="hover:text-brand-primary transition-colors">Shop Catalog</a></li>
+            <li><a href="#wishlist" class="hover:text-brand-primary transition-colors">Your Wishlist</a></li>
+            <li><a href="#compare" class="hover:text-brand-primary transition-colors">Compare Products</a></li>
+            <li><a href="#admin" class="hover:text-brand-primary transition-colors">Admin Portal</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-themeText-primary uppercase tracking-wider mb-4">Support</h4>
+          <ul class="space-y-2 text-sm text-themeText-secondary">
+            <li><a href="#faq" class="hover:text-brand-primary transition-colors">FAQ</a></li>
+            <li><a href="#contact" class="hover:text-brand-primary transition-colors">Contact Support</a></li>
+            <li><a href="#about" class="hover:text-brand-primary transition-colors">About Us</a></li>
+            <li><a href="#" class="hover:text-brand-primary transition-colors">Return Policy</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-themeText-primary uppercase tracking-wider mb-4">Get the App</h4>
+          <p class="text-sm text-themeText-secondary mb-4 font-medium">Download the AURA mobile app for exclusive deals and instant checkout.</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href="#" class="inline-flex items-center gap-2.5 px-4 py-2 bg-themeBg-primary border border-themeText-muted/20 rounded-xl hover:border-brand-primary text-xs font-semibold transition-all">
+              <i class="fa-brands fa-apple text-lg"></i> App Store
+            </a>
+            <a href="#" class="inline-flex items-center gap-2.5 px-4 py-2 bg-themeBg-primary border border-themeText-muted/20 rounded-xl hover:border-brand-primary text-xs font-semibold transition-all">
+              <i class="fa-brands fa-google-play text-lg"></i> Google Play
+            </a>
+          </div>
+        </div>
+      </div>
+      <hr class="border-themeText-muted/10 my-6">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-themeText-muted font-medium">
+        <span>&copy; 2026 AURA Store. All rights reserved.</span>
+        <div class="flex items-center gap-4">
+          <a href="#" class="hover:underline">Privacy Policy</a>
+          <a href="#" class="hover:underline">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================= -->
+  <!-- MODALS & POPUPS -->
+  <!-- ========================================================= -->
+
+  <!-- 1. PRODUCT QUICK VIEW MODAL -->
+  <div id="quick-view-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
+    <div class="bg-themeBg-secondary border border-white/10 rounded-[32px] w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 relative glass-panel transform scale-95 transition-all duration-300">
+      
+      <!-- Close Button -->
+      <button id="quick-view-close" class="absolute top-6 right-6 p-2 text-themeText-secondary hover:text-themeText-primary hover:bg-themeText-muted/10 rounded-full transition-all z-10">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mt-4">
+        
+        <!-- Gallery Container -->
+        <div>
+          <div class="relative bg-white border border-slate-100 rounded-3xl p-6 mb-4 flex items-center justify-center h-80 overflow-hidden" id="quick-view-img-container">
+            <img src="" alt="" id="quick-view-main-image" class="max-h-full max-w-full object-contain">
+            <div id="magnifier-glass" class="magnifier-glass"></div>
+          </div>
+          <!-- Thumbnail Row -->
+          <div class="flex gap-3 justify-center" id="quick-view-thumbnails-row">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Product Details Panel -->
+        <div class="space-y-5">
+          <div>
+            <span id="quick-view-category" class="text-xs font-bold text-brand-primary uppercase tracking-widest">Category</span>
+            <h2 id="quick-view-title" class="text-2xl sm:text-3xl font-display font-extrabold text-themeText-primary mt-1">Product Title</h2>
+            <!-- Rating / Stock -->
+            <div class="flex items-center gap-4 mt-2">
+              <div class="flex items-center gap-1">
+                <span id="quick-view-rating-value" class="text-sm font-bold text-themeText-primary">4.5</span>
+                <span class="flex text-yellow-400 text-xs" id="quick-view-rating-stars">
+                  <i class="fa-solid fa-star"></i>
+                </span>
+              </div>
+              <span class="w-1.5 h-1.5 rounded-full bg-themeText-muted"></span>
+              <span id="quick-view-stock-indicator" class="text-xs font-semibold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">In Stock</span>
+            </div>
+          </div>
+
+          <p id="quick-view-description" class="text-sm text-themeText-secondary leading-relaxed">Product description goes here...</p>
+
+          <!-- Color Variants -->
+          <div>
+            <span class="text-xs font-semibold text-themeText-secondary uppercase tracking-wider block mb-2">Color Variants</span>
+            <div class="flex items-center gap-3" id="quick-view-colors">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Size variants -->
+          <div id="quick-view-size-container">
+            <span class="text-xs font-semibold text-themeText-secondary uppercase tracking-wider block mb-2">Size</span>
+            <div class="flex items-center gap-2" id="quick-view-sizes">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Pricing and Action -->
+          <div class="border-t border-themeText-muted/10 pt-5 space-y-4">
+            <div class="flex items-baseline gap-3">
+              <span id="quick-view-price" class="text-3xl font-display font-black text-themeText-primary">₹0.00</span>
+              <span id="quick-view-original-price" class="text-sm text-themeText-muted line-through">₹0.00</span>
+              <span id="quick-view-discount" class="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">0% OFF</span>
+            </div>
+            
+            <div class="flex gap-4">
+              <!-- Quantity Controls -->
+              <div class="flex items-center border border-themeText-muted/20 rounded-xl overflow-hidden bg-themeBg-primary">
+                <button id="modal-qty-minus" class="px-4 py-2 hover:bg-themeText-muted/10 text-themeText-primary"><i class="fa-solid fa-minus text-xs"></i></button>
+                <span id="modal-qty-value" class="px-4 py-2 text-sm font-semibold text-themeText-primary min-w-[40px] text-center">1</span>
+                <button id="modal-qty-plus" class="px-4 py-2 hover:bg-themeText-muted/10 text-themeText-primary"><i class="fa-solid fa-plus text-xs"></i></button>
+              </div>
+
+              <!-- Add to Cart -->
+              <button id="modal-add-to-cart-btn" class="flex-1 py-3.5 bg-brand-primary hover:bg-brand-hover text-white font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-primary/20">
+                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+              </button>
+              
+              <!-- Heart Wishlist -->
+              <button id="modal-wishlist-btn" class="p-3.5 border border-themeText-muted/20 hover:border-red-500 hover:text-red-500 rounded-xl text-themeText-secondary transition-all">
+                <i class="fa-regular fa-heart text-lg"></i>
+              </button>
+
+              <!-- Share QR Code Button (Feature 7) -->
+              <button id="modal-share-qr-btn" class="p-3.5 border border-themeText-muted/20 hover:border-brand-primary hover:text-brand-primary rounded-xl text-themeText-secondary transition-all" title="Share QR Code">
+                <i class="fa-solid fa-qrcode text-lg"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Product meta specs -->
+          <div class="border-t border-themeText-muted/10 pt-4 grid grid-cols-2 gap-4 text-xs text-themeText-secondary">
+            <div>
+              <span class="text-themeText-muted font-medium">Estimated Delivery:</span>
+              <p class="font-bold text-themeText-primary mt-0.5"><i class="fa-solid fa-truck text-brand-primary mr-1"></i> July 5, 2026</p>
+            </div>
+            <div>
+              <span class="text-themeText-muted font-medium">Easy Returns:</span>
+              <p class="font-bold text-themeText-primary mt-0.5"><i class="fa-solid fa-rotate-left text-brand-primary mr-1"></i> 30-Day Policy</p>
+            </div>
+          </div>
+
+          <!-- QR Code Sharing Panel (Feature 7) -->
+          <div id="quick-view-qr-panel" class="hidden border-t border-themeText-muted/10 pt-4 flex items-center gap-4">
+            <div id="quick-view-qr-container" class="bg-white p-2 rounded-2xl border border-slate-100 flex items-center justify-center flex-shrink-0">
+              <img id="quick-view-qr-image" src="" alt="Product QR Code" class="w-20 h-20">
+            </div>
+            <div class="space-y-1">
+              <h4 class="text-xs font-bold text-themeText-primary uppercase tracking-wider">Scan & Share</h4>
+              <p class="text-[11px] text-themeText-secondary leading-relaxed">Scan this QR code with your mobile camera to instantly view and share this product!</p>
+              <button id="quick-view-copy-link" class="text-xs text-brand-primary hover:text-brand-hover font-semibold flex items-center gap-1.5 mt-1 transition-colors">
+                <i class="fa-solid fa-copy"></i> Copy Link
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ADD/EDIT PRODUCT MODAL (Admin Dashboard) -->
+  <div id="admin-product-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
+    <div class="bg-themeBg-secondary border border-white/10 rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative glass-panel transform scale-95 transition-all duration-300">
+      <button id="admin-product-close" class="absolute top-6 right-6 p-2 text-themeText-secondary hover:text-themeText-primary">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+
+      <h2 id="admin-modal-title" class="text-2xl font-display font-extrabold mb-6 text-themeText-primary">Add New Product</h2>
+      
+      <form id="admin-product-form" class="space-y-4">
+        <input type="hidden" id="admin-product-id">
+        <div>
+          <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Product Title</label>
+          <input type="text" id="admin-form-title" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Category</label>
+            <select id="admin-form-category" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary cursor-pointer">
+              <option value="electronics">Electronics</option>
+              <option value="jewelery">Jewelry</option>
+              <option value="men's clothing">Men's Clothing</option>
+              <option value="women's clothing">Women's Clothing</option>
+              <option value="footwear">Footwear</option>
+              <option value="accessories">Accessories</option>
+              <option value="watches">Watches</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Price (₹)</label>
+            <input type="number" id="admin-form-price" step="0.01" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Image URL</label>
+          <input type="url" id="admin-form-image" placeholder="https://images.unsplash.com/..." required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Description</label>
+          <textarea id="admin-form-description" rows="3" required class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Initial Rating</label>
+            <input type="number" id="admin-form-rating" min="0" max="5" step="0.1" value="4.5" class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-themeText-secondary uppercase tracking-wider mb-2">Rating Count</label>
+            <input type="number" id="admin-form-rating-count" value="120" class="w-full px-4 py-2.5 bg-themeBg-primary border border-themeText-muted/20 rounded-xl focus:outline-none focus:border-brand-primary text-sm text-themeText-primary">
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3 bg-brand-primary hover:bg-brand-hover text-white font-bold rounded-xl text-sm transition-all mt-4">Save Product</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── MAP PICKER MODAL — Real-time location search + interactive map ── -->
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+  <style>
+    /* Search result hover */
+    #map-search-results li:hover { background: rgba(168,85,247,0.10); }
+    /* Leaflet popup style override */
+    .leaflet-popup-content-wrapper {
+      background: #1e2235;
+      color: #e2e8f0;
+      border: 1px solid rgba(168,85,247,0.4);
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    .leaflet-popup-tip { background: #1e2235; }
+    /* Hide default leaflet attribution on small screens */
+    @media(max-width:480px){ .leaflet-control-attribution{ display:none; } }
+  </style>
+
+  <div id="map-picker-modal"
+    class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-2 sm:p-4 hidden">
+    <div class="w-full max-w-3xl bg-themeBg-secondary rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col" style="height:90vh;max-height:680px;">
+
+      <!-- ── Header ─────────────────────────────────────── -->
+      <div class="flex items-center justify-between px-5 py-3.5 border-b border-themeText-muted/10 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-map-location-dot text-purple-500 text-lg"></i>
+          <div>
+            <h3 class="text-sm font-bold text-themeText-primary">Pick Delivery Location</h3>
+            <p class="text-[10px] text-themeText-muted">Search colonies, shops, malls, streets, landmarks worldwide</p>
+          </div>
+        </div>
+        <button id="map-picker-close"
+          class="p-2 rounded-full hover:bg-themeText-muted/10 text-themeText-secondary hover:text-themeText-primary transition-all">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- ── Search bar (real-time like Google Maps) ──────── -->
+      <div class="px-4 pt-3 pb-2 border-b border-themeText-muted/10 flex-shrink-0 relative">
+        <div class="relative">
+          <i id="map-search-icon" class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-themeText-muted text-sm pointer-events-none"></i>
+          <input id="map-search-input" type="text"
+            placeholder="Search: MG Road, Phoenix Mall, Koramangala, New York…"
+            autocomplete="off" spellcheck="false"
+            class="w-full pl-10 pr-20 py-2.5 rounded-xl border border-themeText-muted/20 bg-themeBg-primary text-sm text-themeText-primary focus:outline-none focus:border-purple-500 transition-all placeholder:text-themeText-muted/60">
+          <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            <button id="map-search-clear"
+              class="hidden p-1.5 text-themeText-muted hover:text-themeText-primary transition-all">
+              <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+            <button id="map-search-btn"
+              class="px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white text-xs font-bold rounded-lg transition-all">
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Live autocomplete dropdown -->
+        <ul id="map-search-results"
+          class="hidden absolute left-4 right-4 top-full mt-1 bg-themeBg-secondary border border-themeText-muted/20 rounded-2xl shadow-2xl overflow-hidden z-[10001] max-h-64 overflow-y-auto">
+        </ul>
+
+        <!-- Category quick filters -->
+        <div class="flex gap-2 mt-2 overflow-x-auto pb-1 scrollbar-none">
+          <button class="map-cat-btn flex-shrink-0 px-3 py-1 rounded-full bg-themeText-muted/10 hover:bg-purple-500/20 hover:text-purple-400 text-themeText-muted text-[10px] font-semibold transition-all" data-q="mall near me">🏬 Malls</button>
+          <button class="map-cat-btn flex-shrink-0 px-3 py-1 rounded-full bg-themeText-muted/10 hover:bg-purple-500/20 hover:text-purple-400 text-themeText-muted text-[10px] font-semibold transition-all" data-q="colony residential area">🏘 Colonies</button>
+          <button class="map-cat-btn flex-shrink-0 px-3 py-1 rounded-full bg-themeText-muted/10 hover:bg-purple-500/20 hover:text-purple-400 text-themeText-muted text-[10px] font-semibold transition-all" data-q="supermarket shop store">🛒 Shops</button>
+          <button class="map-cat-btn flex-shrink-0 px-3 py-1 rounded-full bg-themeText-muted/10 hover:bg-purple-500/20 hover:text-purple-400 text-themeText-muted text-[10px] font-semibold transition-all" data-q="hospital">🏥 Hospitals</button>
+          <button class="map-cat-btn flex-shrink-0 px-3 py-1 rounded-full bg-themeText-muted/10 hover:bg-purple-500/20 hover:text-purple-400 text-themeText-muted text-[10px] font-semibold transition-all" data-q="school college university">🎓 Schools</button>
+          <button class="map-cat-btn flex-shrink-0 px-3 py-1 rounded-full bg-themeText-muted/10 hover:bg-purple-500/20 hover:text-purple-400 text-themeText-muted text-[10px] font-semibold transition-all" data-q="restaurant hotel">🍽 Restaurants</button>
+          <button class="map-cat-btn flex-shrink-0 px-3 py-1 rounded-full bg-themeText-muted/10 hover:bg-purple-500/20 hover:text-purple-400 text-themeText-muted text-[10px] font-semibold transition-all" data-q="bus station railway station airport">🚌 Transport</button>
+          <button class="map-cat-btn flex-shrink-0 px-3 py-1 rounded-full bg-themeText-muted/10 hover:bg-purple-500/20 hover:text-purple-400 text-themeText-muted text-[10px] font-semibold transition-all" data-q="park garden lake">🌳 Parks</button>
+        </div>
+      </div>
+
+      <!-- ── The actual interactive map ─────────────────── -->
+      <div id="leaflet-map" class="flex-1 w-full" style="min-height:200px;"></div>
+
+      <!-- ── Selected address preview bar ──────────────── -->
+      <div id="map-selected-preview"
+        class="px-4 py-3 border-t border-themeText-muted/10 flex-shrink-0 hidden bg-purple-500/5">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-start gap-2.5 flex-1 min-w-0">
+            <i class="fa-solid fa-location-dot text-purple-500 text-sm mt-0.5 flex-shrink-0"></i>
+            <div class="min-w-0">
+              <p id="map-selected-name" class="text-xs font-bold text-themeText-primary truncate"></p>
+              <p id="map-selected-address" class="text-[10px] text-themeText-muted leading-snug truncate"></p>
+            </div>
+          </div>
+          <button id="map-confirm-btn"
+            class="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-xs font-bold rounded-xl transition-all shadow-lg shadow-purple-500/25 whitespace-nowrap">
+            <i class="fa-solid fa-check"></i> Use This Location
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Hint when nothing selected ────────────────── -->
+      <div id="map-tap-hint"
+        class="px-5 py-3 border-t border-themeText-muted/10 flex-shrink-0 text-center text-[11px] text-themeText-muted">
+        <i class="fa-solid fa-hand-pointer text-purple-400 mr-1"></i>
+        Tap anywhere on the map to drop a pin · Drag the pin to adjust
+      </div>
+
+    </div>
+  </div>
+
+  <!-- --- TOAST NOTIFICATIONS CONTAINER --- -->
+  <div id="toast-container" class="fixed bottom-6 right-6 flex flex-col gap-3 pointer-events-none">
+    <!-- Toasts injected via JS -->
+  </div>
+
+  <!-- --- FLOATING ACTION BUTTONS --- -->
+  <div class="fixed bottom-6 right-6 flex flex-col gap-4 z-40 select-none">
+    <!-- Floating Cart Icon (Feature 2) -->
+    <button id="floating-cart-btn" class="w-14 h-14 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-full shadow-2xl flex items-center justify-center relative hover:scale-110 active:scale-95 transition-all duration-300 group border border-white/20">
+      <i class="fa-solid fa-bag-shopping text-xl group-hover:animate-bounce"></i>
+      <span id="floating-cart-badge" class="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white text-xs font-black rounded-full flex items-center justify-center border-2 border-slate-900 scale-0 transition-all duration-300">0</span>
+      <div class="absolute inset-0 rounded-full bg-brand-primary/20 -z-10 animate-ping group-hover:animate-none"></div>
+    </button>
+
+    <!-- Back to Top with Scroll Progress SVG (Feature 11) -->
+    <button id="back-to-top" class="back-to-top w-14 h-14 bg-themeBg-card border border-white/10 hover:border-brand-primary text-themeText-primary rounded-full shadow-2xl flex items-center justify-center relative hover:scale-110 active:scale-95 transition-all duration-300 translate-y-20 opacity-0 pointer-events-none">
+      <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="4" class="text-themeText-muted/10 fill-none" />
+        <circle id="scroll-progress-circle" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="4" 
+          stroke-linecap="round" class="text-brand-primary fill-none transition-all duration-75"
+          stroke-dasharray="263.89" stroke-dashoffset="263.89" />
+      </svg>
+      <i class="fa-solid fa-arrow-up text-lg text-brand-primary"></i>
+    </button>
+  </div>
+
+  <!-- GSAP Animation Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Swiper.js JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+  <!-- Application JS Logic -->
+  <script src="app.js"></script>
+  <!-- Top Search Band wiring -->
+  <script>
+    function topSearchTag(el) {
+      const q = el.textContent.trim();
+      const inp = document.getElementById('top-search-input');
+      if (inp) inp.value = q;
+      // Sync hidden global input
+      const gInp = document.getElementById('global-search-input');
+      if (gInp) gInp.value = q;
+      if (typeof syncAndExecuteSearch === 'function') {
+        syncAndExecuteSearch(q, 'top-search-input');
+      }
+      document.querySelectorAll('.top-search-tag').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const inp    = document.getElementById('top-search-input');
+      const btn    = document.getElementById('top-search-btn');
+      const micBtn = document.getElementById('top-band-mic-btn');
+      const micIcon = document.getElementById('top-band-mic-icon');
+
+      // ── Search input & button ──
+      if (inp) {
+        inp.addEventListener('input', (e) => {
+          const gInp = document.getElementById('global-search-input');
+          if (gInp) gInp.value = e.target.value;
+          if (typeof syncAndExecuteSearch === 'function') {
+            syncAndExecuteSearch(e.target.value, 'top-search-input');
+          }
+        });
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && typeof syncAndExecuteSearch === 'function') {
+            syncAndExecuteSearch(inp.value, 'top-search-input');
+          }
+        });
+      }
+
+      if (btn) {
+        btn.addEventListener('click', () => {
+          if (inp && typeof syncAndExecuteSearch === 'function') {
+            syncAndExecuteSearch(inp.value, 'top-search-input');
+          }
+        });
+      }
+
+      // ── Mic Button — handled by app.js initVoiceSearch()
+    });
+  </script>
+
+  <!-- Shipping Address — synchronized GPS + map editor -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var email = localStorage.getItem('userEmail') || '';
+      var fullName = localStorage.getItem('userName') || '';
+      var isGuest = localStorage.getItem('guestMode') === 'true';
+      var firstName = '';
+      var lastName = '';
+
+      if (fullName && fullName.trim()) {
+        var parts = fullName.trim().split(' ');
+        firstName = parts[0] || '';
+        lastName = parts.slice(1).join(' ') || '';
+      } else if (email && !isGuest) {
+        var raw = email.split('@')[0].replace(/[._\-]/g, ' ').split(' ');
+        firstName = raw[0] ? raw[0].charAt(0).toUpperCase() + raw[0].slice(1) : '';
+        lastName = raw.slice(1).map(function (x) {
+          return x.charAt(0).toUpperCase() + x.slice(1);
+        }).join(' ');
+      }
+
+      var viewMode = document.getElementById('address-view-mode');
+      var editMode = document.getElementById('address-edit-mode');
+      var mapModal = document.getElementById('map-picker-modal');
+      var addressEditBtn = document.getElementById('address-edit-btn');
+      var addressCancelBtn = document.getElementById('address-cancel-btn');
+      var addressForm = document.getElementById('address-edit-form');
+      var viewOnMapBtn = document.getElementById('view-on-map-btn');
+      var mapSearchInput = document.getElementById('map-search-input');
+      var mapSearchResults = document.getElementById('map-search-results');
+      var mapSearchBtn = document.getElementById('map-search-btn');
+      var mapSearchClear = document.getElementById('map-search-clear');
+      var mapConfirmBtn = document.getElementById('map-confirm-btn');
+      var pendingLat = null;
+      var pendingLng = null;
+      var selectedLat = null;
+      var selectedLng = null;
+      var leafletLoaded = false;
+      var leafletMap = null;
+      var leafletMarker = null;
+      var searchTimer = null;
+
+      function getCurrentAddrKey() {
+        return email
+          ? 'aura_addr_' + email.toLowerCase().replace(/[^a-z0-9]/g, '_')
+          : 'aura_addr_guest';
+      }
+
+      function getAddr() {
+        try {
+          return JSON.parse(localStorage.getItem(getCurrentAddrKey())) || {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function saveAddr(address) {
+        localStorage.setItem(getCurrentAddrKey(), JSON.stringify(address));
+      }
+
+      function toast(message, type) {
+        if (window.showToast) window.showToast(message, type || 'success');
+      }
+
+      function setInputValue(id, value) {
+        var el = document.getElementById(id);
+        if (el) el.value = value || '';
+      }
+
+      function buildAddressFieldsFromData(data) {
+        var ad = data && data.address ? data.address : {};
+        return {
+          houseNumber: ad.house_number || '',
+          buildingName: ad.building || ad.office || ad.shop || '',
+          street: ad.road || ad.pedestrian || ad.footway || ad.path || '',
+          area: [ad.neighbourhood || ad.suburb || ad.quarter || '', ad.village || ad.city_district || ad.county || ''].filter(Boolean).join(', '),
+          landmark: ad.landmark || '',
+          city: ad.city || ad.town || ad.village || ad.county || '',
+          district: ad.city_district || ad.district || ad.county || '',
+          state: ad.state || ad.state_district || '',
+          pin: ad.postcode || '',
+          country: ad.country || 'India'
+        };
+      }
+
+      function applyAddressFieldsToForm(address) {
+        var values = address || {};
+        setInputValue('addr-house-number', values.houseNumber);
+        setInputValue('addr-building-name', values.buildingName);
+        setInputValue('addr-street', values.street);
+        setInputValue('addr-area', values.area);
+        setInputValue('addr-landmark', values.landmark);
+        setInputValue('addr-city', values.city);
+        setInputValue('addr-district', values.district);
+        setInputValue('addr-state', values.state);
+        setInputValue('addr-pin', values.pin);
+        setInputValue('addr-country', values.country || 'India');
+      }
+
+      function fillForm(address) {
+        var values = address || {};
+        setInputValue('addr-first-name', values.firstName || firstName);
+        setInputValue('addr-last-name', values.lastName || lastName);
+        applyAddressFieldsToForm(values);
+      }
+
+      function collectAddressFromForm() {
+        var address = {
+          firstName: document.getElementById('addr-first-name').value.trim(),
+          lastName: document.getElementById('addr-last-name').value.trim(),
+          houseNumber: document.getElementById('addr-house-number').value.trim(),
+          buildingName: document.getElementById('addr-building-name').value.trim(),
+          street: document.getElementById('addr-street').value.trim(),
+          area: document.getElementById('addr-area').value.trim(),
+          landmark: document.getElementById('addr-landmark').value.trim(),
+          city: document.getElementById('addr-city').value.trim(),
+          district: document.getElementById('addr-district').value.trim(),
+          state: document.getElementById('addr-state').value.trim(),
+          pin: document.getElementById('addr-pin').value.trim(),
+          country: document.getElementById('addr-country').value.trim()
+        };
+        if (pendingLat !== null && pendingLng !== null) {
+          address._lat = pendingLat;
+          address._lng = pendingLng;
+        }
+        return address;
+      }
+
+      function validateRequiredAddress(address) {
+        var requiredFields = [
+          { id: 'addr-first-name', label: 'First Name', value: address.firstName },
+          { id: 'addr-last-name', label: 'Last Name', value: address.lastName },
+          { id: 'addr-house-number', label: 'House / Flat Number', value: address.houseNumber },
+          { id: 'addr-building-name', label: 'Building Name', value: address.buildingName },
+          { id: 'addr-street', label: 'Street / Road', value: address.street },
+          { id: 'addr-area', label: 'Area / Locality', value: address.area },
+          { id: 'addr-landmark', label: 'Landmark', value: address.landmark },
+          { id: 'addr-city', label: 'City', value: address.city },
+          { id: 'addr-district', label: 'District', value: address.district },
+          { id: 'addr-state', label: 'State', value: address.state },
+          { id: 'addr-pin', label: 'PIN Code', value: address.pin },
+          { id: 'addr-country', label: 'Country', value: address.country }
+        ];
+
+        for (var i = 0; i < requiredFields.length; i++) {
+          var field = requiredFields[i];
+          if (!field.value) {
+            var el = document.getElementById(field.id);
+            if (el) {
+              el.focus();
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            toast('Please fill ' + field.label + ' before saving.', 'error');
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      function renderDisplay(address) {
+        var saved = address || getAddr();
+        var name = ((saved.firstName || firstName || 'User') + ' ' + (saved.lastName || lastName || '')).trim();
+        var streetEl = document.getElementById('addr-street-display');
+        var cityEl = document.getElementById('addr-city-display');
+        var countryEl = document.getElementById('addr-country-display');
+        var nameEl = document.getElementById('addr-name-display');
+
+        if (nameEl) nameEl.textContent = name || 'User';
+
+        var line1 = [saved.houseNumber, saved.buildingName, saved.street, saved.area].filter(Boolean).join(', ');
+        var line2 = [saved.city, saved.district, saved.state].filter(Boolean).join(', ');
+        var line3 = [saved.pin, saved.country].filter(Boolean).join(' — ');
+        var line4 = saved.landmark ? 'Landmark: ' + saved.landmark : '';
+
+        if (streetEl) streetEl.textContent = line1 || '—';
+        if (cityEl) cityEl.textContent = [line4, line2, line3].filter(Boolean).join(' • ') || '—';
+        if (countryEl) countryEl.textContent = saved.country || 'India';
+        if (viewOnMapBtn) viewOnMapBtn.style.display = (saved.street || saved.city || saved.area || saved._lat) ? 'flex' : 'none';
+      }
+
+      function prefillCheckout(address) {
+        var saved = address || getAddr();
+        var setValue = function (id, value) {
+          var el = document.getElementById(id);
+          if (el) el.value = value || '';
+        };
+        setValue('checkout-first-name', saved.firstName || firstName);
+        setValue('checkout-last-name', saved.lastName || lastName);
+        if (!isGuest) setValue('checkout-email', email);
+        var streetLine = [saved.houseNumber, saved.buildingName, saved.street, saved.area].filter(Boolean).join(', ');
+        var cityLine = [saved.city, saved.district, saved.state].filter(Boolean).join(', ');
+        setValue('checkout-street', [streetLine, saved.landmark].filter(Boolean).join(' • '));
+        setValue('checkout-city', cityLine);
+        setValue('checkout-pin', saved.pin);
+      }
+
+      function commitAddress(address) {
+        var normalizedAddress = address || {};
+        fillForm(normalizedAddress);
+        saveAddr(normalizedAddress);
+        renderDisplay(normalizedAddress);
+        prefillCheckout(normalizedAddress);
+      }
+
+      function openEdit() {
+        fillForm(getAddr());
+        if (viewMode) viewMode.classList.add('hidden');
+        if (editMode) editMode.classList.remove('hidden');
+        if (editMode) editMode.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function closeEdit() {
+        if (editMode) editMode.classList.add('hidden');
+        if (viewMode) viewMode.classList.remove('hidden');
+      }
+
+      function loadLeaflet(callback) {
+        if (leafletLoaded) {
+          callback();
+          return;
+        }
+        var script = document.createElement('script');
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLs=';
+        script.crossOrigin = '';
+        script.onload = function () {
+          leafletLoaded = true;
+          callback();
+        };
+        document.head.appendChild(script);
+      }
+
+      function makePinIcon() {
+        return L.divIcon({
+          html: '<svg viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg" width="28" height="38"><path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 23 9 23S21 15.75 21 9c0-4.97-4.03-9-9-9z" fill="#C8A96A"/><circle cx="12" cy="9" r="3.5" fill="white"/></svg>',
+          iconSize: [28, 38],
+          iconAnchor: [14, 38],
+          className: ''
+        });
+      }
+
+      function initLeafletMap(lat, lng) {
+        if (leafletMap) {
+          leafletMap.setView([lat, lng], 16);
+          return;
+        }
+        leafletMap = L.map('leaflet-map', { zoomControl: true }).setView([lat, lng], 16);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+          maxZoom: 19
+        }).addTo(leafletMap);
+        leafletMap.on('click', function (event) {
+          dropPin(event.latlng.lat, event.latlng.lng, { showToast: false });
+        });
+      }
+
+      function setLocationPreview(data) {
+        var ad = data && data.address ? data.address : {};
+        var nameEl = document.getElementById('map-selected-name');
+        var addressEl = document.getElementById('map-selected-address');
+        var name = ad.shop || ad.amenity || ad.building || ad.leisure || ad.tourism || ad.road || ad.neighbourhood || ad.suburb || (data && data.display_name ? data.display_name.split(',')[0] : '');
+        var area = [ad.city || ad.town || ad.village, ad.state].filter(Boolean).join(', ');
+        if (nameEl) nameEl.textContent = name || '—';
+        if (addressEl) addressEl.textContent = area || (data && data.display_name ? data.display_name : '');
+      }
+
+      function updateFormFromGeocode(data) {
+        var fields = buildAddressFieldsFromData(data);
+        applyAddressFieldsToForm(fields);
+      }
+
+      function dropPin(lat, lng, options) {
+        options = options || {};
+        selectedLat = lat;
+        selectedLng = lng;
+        pendingLat = lat;
+        pendingLng = lng;
+
+        if (leafletMarker) {
+          leafletMarker.setLatLng([lat, lng]);
+        } else {
+          leafletMarker = L.marker([lat, lng], { icon: makePinIcon(), draggable: true }).addTo(leafletMap);
+          leafletMarker.on('dragend', function (event) {
+            var point = event.target.getLatLng();
+            dropPin(point.lat, point.lng, { showToast: false });
+          });
+        }
+
+        if (leafletMap) leafletMap.panTo([lat, lng]);
+
+        var hint = document.getElementById('map-tap-hint');
+        var preview = document.getElementById('map-selected-preview');
+        var nameEl = document.getElementById('map-selected-name');
+        var addressEl = document.getElementById('map-selected-address');
+        if (hint) hint.classList.add('hidden');
+        if (preview) preview.classList.remove('hidden');
+        if (nameEl) nameEl.textContent = 'Fetching address…';
+        if (addressEl) addressEl.textContent = '';
+
+        fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&addressdetails=1&accept-language=en&zoom=18', { headers: { 'Accept-Language': 'en' } })
+          .then(function (response) { return response.json(); })
+          .then(function (data) {
+            leafletMap._pickedData = data;
+            setLocationPreview(data);
+            updateFormFromGeocode(data);
+            if (options.showToast !== false) {
+              toast('📍 Address updated from the selected location.', 'success');
+            }
+          })
+          .catch(function () {
+            if (nameEl) nameEl.textContent = lat.toFixed(5) + ', ' + lng.toFixed(5);
+            if (addressEl) addressEl.textContent = 'Address lookup failed';
+            leafletMap._pickedData = null;
+            if (options.showToast !== false) {
+              toast('Address lookup failed, but the location is ready to save.', 'error');
+            }
+          });
+      }
+
+      function showMapModal(lat, lng) {
+        if (mapModal) mapModal.classList.remove('hidden');
+        if (leafletMap && lat !== null && lng !== null) {
+          leafletMap.setView([lat, lng], 16);
+          setTimeout(function () {
+            dropPin(lat, lng, { showToast: false });
+          }, 100);
+          return;
+        }
+        loadLeaflet(function () {
+          initLeafletMap(lat || 20.5937, lng || 78.9629);
+          setTimeout(function () {
+            leafletMap.invalidateSize();
+            if (lat !== null && lng !== null) {
+              dropPin(lat, lng, { showToast: false });
+            }
+            if (mapSearchInput) mapSearchInput.focus();
+          }, 220);
+        });
+      }
+
+      function closeMapModal() {
+        if (mapModal) mapModal.classList.add('hidden');
+        if (mapSearchResults) mapSearchResults.classList.add('hidden');
+      }
+
+      function searchPlaces(query) {
+        if (!query || query.length < 2) return;
+        var icon = document.getElementById('map-search-icon');
+        if (icon) icon.className = 'fa-solid fa-spinner fa-spin absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-primary text-sm pointer-events-none';
+        if (mapSearchResults) {
+          mapSearchResults.innerHTML = '<li class="px-4 py-3 text-xs text-themeText-muted">Searching for "' + query + '"…</li>';
+          mapSearchResults.classList.remove('hidden');
+        }
+
+        var url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&addressdetails=1&namedetails=1&limit=10&accept-language=en';
+        if (leafletMap) {
+          var bounds = leafletMap.getBounds();
+          url += '&viewbox=' + bounds.getWest() + ',' + bounds.getNorth() + ',' + bounds.getEast() + ',' + bounds.getSouth() + '&bounded=0';
+        }
+
+        fetch(url, { headers: { 'Accept-Language': 'en' } })
+          .then(function (response) { return response.json(); })
+          .then(function (items) {
+            if (icon) icon.className = 'fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-themeText-muted text-sm pointer-events-none';
+            if (!mapSearchResults) return;
+            mapSearchResults.innerHTML = '';
+            if (!items || !items.length) {
+              mapSearchResults.innerHTML = '<li class="px-4 py-3 text-xs text-themeText-muted text-center">No results found.</li>';
+              return;
+            }
+
+            items.forEach(function (item) {
+              var li = document.createElement('li');
+              var ad = item.address || {};
+              var nn = item.namedetails || {};
+              var primary = nn.name || ad.shop || ad.amenity || ad.road || ad.neighbourhood || ad.suburb || item.display_name.split(',')[0];
+              var secondary = [ad.road, ad.neighbourhood || ad.suburb, ad.city || ad.town || ad.village, ad.state, ad.country].filter(function (value) { return value && value !== primary; }).slice(0, 3).join(', ');
+              li.className = 'px-4 py-2.5 cursor-pointer flex items-start gap-3 border-b border-themeText-muted/10 last:border-0 transition-colors hover:bg-brand-primary/10';
+              li.innerHTML = '<div class="min-w-0"><p class="text-xs font-semibold text-themeText-primary truncate">' + primary + '</p><p class="text-[10px] text-themeText-muted truncate">' + secondary + '</p></div>';
+              li.addEventListener('click', function () {
+                var lat = parseFloat(item.lat);
+                var lng = parseFloat(item.lon);
+                if (leafletMap) {
+                  leafletMap.flyTo([lat, lng], 17, { duration: 0.8 });
+                  setTimeout(function () {
+                    dropPin(lat, lng, { showToast: true });
+                  }, 900);
+                }
+                if (mapSearchResults) mapSearchResults.classList.add('hidden');
+                if (mapSearchInput) mapSearchInput.value = primary;
+                if (mapSearchClear) mapSearchClear.classList.remove('hidden');
+              });
+              mapSearchResults.appendChild(li);
+            });
+          })
+          .catch(function () {
+            if (icon) icon.className = 'fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-themeText-muted text-sm pointer-events-none';
+            if (mapSearchResults) mapSearchResults.innerHTML = '<li class="px-4 py-3 text-xs text-themeText-muted text-center">Search failed. Try again.</li>';
+          });
+      }
+
+      if (addressEditBtn) addressEditBtn.addEventListener('click', openEdit);
+      if (addressCancelBtn) addressCancelBtn.addEventListener('click', closeEdit);
+
+      if (addressForm) {
+        addressForm.addEventListener('submit', function (event) {
+          event.preventDefault();
+          var address = collectAddressFromForm();
+
+          if (!validateRequiredAddress(address)) {
+            return;
+          }
+
+          /* Show saving state on button */
+          var saveBtn = document.getElementById('address-save-btn');
+          if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
+          }
+
+          /* Commit: persist + update card + prefill checkout */
+          commitAddress(address);
+          closeEdit();
+
+          /* Reset button state */
+          if (saveBtn) {
+            setTimeout(function () {
+              saveBtn.disabled = false;
+              saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Save Address';
+            }, 800);
+          }
+
+          toast('✅ Shipping address saved!', 'success');
+        });
+      }
+
+      if (locBtn) {
+        locBtn.addEventListener('click', function () {
+          if (!navigator.geolocation) {
+            toast('Geolocation is not supported by this browser.', 'error');
+            return;
+          }
+          setLocLoading(true);
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              var lat = position.coords.latitude;
+              var lng = position.coords.longitude;
+              setLocLoading(false);
+              showMapModal(lat, lng);
+              dropPin(lat, lng, { showToast: true });
+              toast('📍 Your current location is ready. Move the pin if needed.', 'success');
+            },
+            function (error) {
+              setLocLoading(false);
+              var messages = {
+                1: 'Location permission denied. Please allow location access and try again.',
+                2: 'Location is unavailable right now. Please check your device GPS.',
+                3: 'Location request timed out. Please try again.'
+              };
+              showMapModal(null, null);
+              toast(messages[error.code] || 'Unable to access your location. You can search manually on the map.', 'error');
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          );
+        });
+      }
+
+      if (pickOnMapBtn) {
+        pickOnMapBtn.addEventListener('click', function () {
+          showMapModal(null, null);
+          toast('Search for any address or tap the map to place a pin.', 'info');
+        });
+      }
+
+      if (viewOnMapBtn) {
+        viewOnMapBtn.addEventListener('click', function () {
+          var saved = getAddr();
+          if (!saved || (!saved._lat && !saved._lng && !(saved.street || saved.city || saved.area || saved.state || saved.pin || saved.country))) {
+            toast('No saved address to open yet.', 'error');
+            return;
+          }
+          if (saved._lat && saved._lng) {
+            showMapModal(saved._lat, saved._lng);
+            toast('Opening your latest saved location on the map.', 'success');
+          } else {
+            var query = [saved.houseNumber, saved.buildingName, saved.street, saved.area, saved.city, saved.state, saved.pin, saved.country].filter(Boolean).join(', ');
+            window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query), '_blank', 'noopener,noreferrer');
+            toast('Opening the latest saved address on Google Maps.', 'success');
+          }
+        });
+      }
+
+      if (mapModal) {
+        document.getElementById('map-picker-close').addEventListener('click', closeMapModal);
+        mapModal.addEventListener('click', function (event) {
+          if (event.target === mapModal) closeMapModal();
+        });
+      }
+
+      if (mapSearchInput) {
+        mapSearchInput.addEventListener('input', function () {
+          var query = mapSearchInput.value.trim();
+          if (mapSearchClear) mapSearchClear.classList.toggle('hidden', query.length === 0);
+          clearTimeout(searchTimer);
+          if (query.length < 2) {
+            if (mapSearchResults) mapSearchResults.classList.add('hidden');
+            return;
+          }
+          searchTimer = setTimeout(function () { searchPlaces(query); }, 350);
+        });
+        mapSearchInput.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter') {
+            clearTimeout(searchTimer);
+            searchPlaces(mapSearchInput.value.trim());
+          }
+          if (event.key === 'Escape' && mapSearchResults) {
+            mapSearchResults.classList.add('hidden');
+          }
+        });
+      }
+
+      if (mapSearchBtn) {
+        mapSearchBtn.addEventListener('click', function () {
+          clearTimeout(searchTimer);
+          searchPlaces(mapSearchInput.value.trim());
+        });
+      }
+
+      if (mapSearchClear) {
+        mapSearchClear.addEventListener('click', function () {
+          if (mapSearchInput) mapSearchInput.value = '';
+          mapSearchClear.classList.add('hidden');
+          if (mapSearchResults) mapSearchResults.classList.add('hidden');
+          if (mapSearchInput) mapSearchInput.focus();
+        });
+      }
+
+      document.addEventListener('click', function (event) {
+        if (mapSearchResults && !mapSearchResults.contains(event.target) && event.target !== mapSearchInput && event.target !== mapSearchBtn) {
+          mapSearchResults.classList.add('hidden');
+        }
+      });
+
+      document.querySelectorAll('.map-cat-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var q = btn.getAttribute('data-q');
+          if (mapSearchInput) mapSearchInput.value = q;
+          if (mapSearchClear) mapSearchClear.classList.remove('hidden');
+          clearTimeout(searchTimer);
+          searchPlaces(q);
+        });
+      });
+
+      if (mapConfirmBtn) {
+        mapConfirmBtn.addEventListener('click', function () {
+          if (selectedLat === null || selectedLng === null) {
+            toast('Tap or search a location on the map first.', 'error');
+            return;
+          }
+          closeMapModal();
+          toast('📍 Location selected. Click Save Address to store it.', 'success');
+        });
+      }
+
+      renderDisplay(getAddr());
+      prefillCheckout();
+      window.addEventListener('hashchange', function () {
+        if (window.location.hash === '#checkout') setTimeout(prefillCheckout, 50);
+      });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var upiLabel = document.getElementById('profile-upi-label');
+      if (!upiLabel) return;
+
+      function toUpiHandle(value) {
+        if (!value) return 'user';
+        var cleaned = value.split('@')[0].replace(/[^a-z0-9]/gi, '').toLowerCase();
+        return cleaned || 'user';
+      }
+
+      var email = localStorage.getItem('userEmail') || '';
+      var fullName = localStorage.getItem('userName') || '';
+      var handle = email ? toUpiHandle(email) : toUpiHandle(fullName);
+      upiLabel.textContent = 'UPI — ' + handle + '@okaxis';
+    });
+  </script>
+
+</body>
+</html>

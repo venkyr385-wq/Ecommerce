@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - AURA Premium E-Commerce</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Firebase Compat SDK — works on file:// AND http:// (no ES modules) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <!-- AURA Firebase config — sets up window.auraSignInWithGoogle etc. -->
+  <script src="firebase-config.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style> 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0B1020;
+      --bg-surface: #111827;
+      --primary-blue: #2563EB;
+      --primary-purple: #7C3AED;
+      --primary-cyan: #06B6D4;
+      --white: #FFFFFF;
+      --light-gray: #CBD5E1;
+      --success-green: #10B981;
+      --error-red: #EF4444;
+    }
+
+    body {
+      font-family: 'Inter', 'Poppins', sans-serif;
+      background: var(--bg-primary);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated Gradient Background */
+    .gradient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(135deg, #0B1020 0%, #1a1f3a 50%, #0B1020 100%);
+      animation: gradientShift 10s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Floating Gradient Orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      z-index: 1;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--primary-blue), transparent);
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, var(--primary-purple), transparent);
+      bottom: -100px;
+      right: -100px;
+      animation-delay: 5s;
+    }
+
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, var(--primary-cyan), transparent);
+      top: 50%;
+      right: 10%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+
+    /* Particle Animation */
+    .particles {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--white);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: particleFloat 15s linear infinite;
+    }
+
+    @keyframes particleFloat {
+      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+    }
+
+    /* Main Container */
+    .auth-container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    /* Glassmorphism Card */
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: cardSlideUp 0.6s ease-out;
+    }
+
+    @keyframes cardSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Logo */
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+    }
+
+    .logo p {
+      color: var(--light-gray);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Form Title */
+    .form-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+      text-align: center;
+      color: var(--light-gray);
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Input Group with Floating Label */
+    .input-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      color: var(--white);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary-blue);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .input-field.error {
+      border-color: var(--error-red);
+    }
+
+    .input-field.success {
+      border-color: var(--success-green);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--light-gray);
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+
+    .input-field:focus + .input-icon {
+      color: var(--primary-blue);
+    }
+
+    /* Floating Label */
+    .floating-label {
+      position: absolute;
+      left: 3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--light-gray);
+      font-size: 0.95rem;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-field:focus ~ .floating-label,
+    .input-field:not(:placeholder-shown) ~ .floating-label {
+      top: -10px;
+      left: 1rem;
+      font-size: 0.75rem;
+      color: var(--primary-blue);
+      background: var(--bg-surface);
+      padding: 0 0.5rem;
+      border-radius: 4px;
+    }
+
+    /* Password Toggle */
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--light-gray);
+      cursor: pointer;
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover {
+      color: var(--primary-blue);
+    }
+
+    /* Error Message */
+    .error-message {
+      color: var(--error-red);
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    /* Success Icon */
+    .success-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--success-green);
+      font-size: 1rem;
+      display: none;
+      animation: scaleIn 0.3s ease;
+    }
+
+    .success-icon.show {
+      display: block;
+    }
+
+    @keyframes scaleIn {
+      from { transform: translateY(-50%) scale(0); }
+      to { transform: translateY(-50%) scale(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Remember Me & Forgot Password */
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      color: var(--light-gray);
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--primary-blue);
+    }
+
+    .forgot-link {
+      color: var(--primary-blue);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .forgot-link:hover {
+      color: var(--primary-cyan);
+    }
+
+    /* Login Button */
+    .btn-primary {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+      border: none;
+      border-radius: 16px;
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .btn-primary .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: var(--white);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    .btn-primary.loading .spinner {
+      display: block;
+    }
+
+    .btn-primary.loading .btn-text {
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Ripple Effect */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(0);
+      animation: rippleEffect 0.6s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes rippleEffect {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .divider span {
+      color: var(--light-gray);
+      font-size: 0.875rem;
+    }
+
+    /* Social Login Buttons */
+    .social-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .btn-social {
+      padding: 0.75rem 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: var(--white);
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-social .social-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--light-gray);
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    /* ── Google button — full-width "Continue with Google" style ── */
+    .btn-google-full {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0.875rem 1.5rem;
+      background: #ffffff;
+      border: 1.5px solid #dadce0;
+      border-radius: 14px;
+      color: #3c4043;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      letter-spacing: 0.01em;
+      box-shadow: 0 1px 3px rgba(60,64,67,0.15), 0 1px 2px rgba(60,64,67,0.10);
+    }
+
+    .btn-google-full:hover:not(:disabled) {
+      background: #f8f9fa;
+      border-color: #4285F4;
+      box-shadow: 0 4px 16px rgba(66,133,244,0.28);
+      transform: translateY(-2px) scale(1.015);
+    }
+
+    .btn-google-full:active:not(:disabled) {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 1px 4px rgba(66,133,244,0.20);
+    }
+
+    .btn-google-full:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    /* Google 'G' SVG logo */
+    .google-logo {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    /* Loading spinner inside Google button */
+    .btn-google-full .g-spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid rgba(66,133,244,0.25);
+      border-top-color: #4285F4;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      flex-shrink: 0;
+    }
+
+    .btn-google-full.loading .g-spinner  { display: block; }
+    .btn-google-full.loading .google-logo { display: none; }
+    .btn-google-full.loading .g-btn-text  { color: #4285F4; }
+
+    /* Google button shimmer sweep */
+    .btn-google-full::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.65) 50%, transparent 60%);
+      transition: left 0.55s ease;
+      pointer-events: none;
+    }
+    .btn-google-full:hover:not(:disabled)::after { left: 160%; }
+
+    .btn-social.google  { color: #4285F4; }
+    .btn-social.apple   { color: #000000; background: var(--white); }
+    .btn-social.facebook{ color: #1877F2; }
+
+    .btn-social.google:hover  {
+      background: rgba(66,133,244,0.15);
+      border-color: #4285F4;
+      box-shadow: 0 6px 20px rgba(66,133,244,0.30);
+      transform: translateY(-3px) scale(1.06);
+    }
+    .btn-social.apple:hover {
+      background: #f0f0f0;
+      border-color: #999;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.20);
+      transform: translateY(-3px) scale(1.06);
+    }
+    .btn-social.facebook:hover {
+      background: rgba(24,119,242,0.15);
+      border-color: #1877F2;
+      box-shadow: 0 6px 20px rgba(24,119,242,0.30);
+      transform: translateY(-3px) scale(1.06);
+    }
+    .btn-social.apple .social-label { color: #555; }
+
+    /* Guest Login */
+    .guest-login {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .btn-guest {
+      color: var(--primary-cyan);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-guest:hover {
+      color: var(--primary-blue);
+    }
+
+    /* Sign Up Link */
+    .signup-link {
+      text-align: center;
+      margin-top: 2rem;
+      color: var(--light-gray);
+      font-size: 0.875rem;
+    }
+
+    .signup-link a {
+      color: var(--primary-blue);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .signup-link a:hover {
+      color: var(--primary-cyan);
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: rotate(180deg);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      color: var(--white);
+      font-size: 0.875rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: slideInRight 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .toast.success {
+      border-color: var(--success-green);
+    }
+
+    .toast.error {
+      border-color: var(--error-red);
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(400px);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .auth-card {
+        padding: 2rem;
+        border-radius: 20px;
+      }
+
+      .logo h1 {
+        font-size: 2rem;
+      }
+
+      .form-title {
+        font-size: 1.5rem;
+      }
+
+      .social-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .theme-toggle {
+        top: 1rem;
+        right: 1rem;
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="gradient-bg"></div>
+  
+  <!-- Floating Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage">Success!</span>
+  </div>
+
+  <!-- Main Auth Container -->
+  <div class="auth-container">
+    <div class="auth-card">
+      <!-- Logo -->
+      <div class="logo">
+        <h1><i class="fas fa-gem"></i> AURA</h1>
+        <p>Premium E-Commerce Experience</p>
+      </div>
+
+      <!-- Form Title -->
+      <h2 class="form-title">Welcome Back</h2>
+      <p class="form-subtitle">Sign in to continue your luxury shopping journey</p>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <!-- Email/Mobile Input -->
+        <div class="input-group">
+          <input 
+            type="text" 
+            class="input-field" 
+            id="emailOrMobile" 
+            placeholder=" "
+            required
+          />
+          <i class="input-icon fas fa-envelope"></i>
+          <label class="floating-label">Email or Mobile Number</label>
+          <i class="success-icon fas fa-check-circle"></i>
+          <div class="error-message" id="emailError">Please enter a valid email or mobile number</div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="input-group">
+          <input 
+            type="password" 
+            class="input-field" 
+            id="password" 
+            placeholder=" "
+            required
+          />
+          <i class="input-icon fas fa-lock"></i>
+          <label class="floating-label">Password</label>
+          <button type="button" class="password-toggle" id="passwordToggle">
+            <i class="fas fa-eye"></i>
+          </button>
+          <i class="success-icon fas fa-check-circle"></i>
+          <div class="error-message" id="passwordError">Password is required</div>
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberMe" />
+            <span>Remember Me</span>
+          </label>
+          <a href="#" class="forgot-link" id="forgotPassword">Forgot Password?</a>
+        </div>
+
+        <!-- Login Button -->
+        <button type="submit" class="btn-primary" id="loginBtn">
+          <span class="btn-text">Sign In</span>
+          <div class="spinner"></div>
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>Or continue with</span>
+      </div>
+
+      <!-- ── Firebase Google Sign-In (full-width, always shows account chooser) ── -->
+      <button class="btn-google-full" id="googleSignInBtn" type="button">
+        <!-- Official Google 'G' logo SVG — do not replace with Font Awesome -->
+        <svg class="google-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        <!-- Spinner shown while Firebase popup is loading -->
+        <div class="g-spinner"></div>
+        <span class="g-btn-text">Continue with Google</span>
+      </button>
+
+      <!-- Apple & Facebook (redirect-based) -->
+      <div class="social-buttons">
+        <button class="btn-social apple" id="appleLogin" style="grid-column: span 1;">
+          <i class="fab fa-apple"></i>
+          <span class="social-label">Apple</span>
+        </button>
+        <button class="btn-social facebook" id="facebookLogin" style="grid-column: span 1;">
+          <i class="fab fa-facebook-f"></i>
+          <span class="social-label">Facebook</span>
+        </button>
+      </div>
+
+      <!-- Guest Login -->
+      <div class="guest-login">
+        <a href="#" class="btn-guest" id="guestLogin">
+          <i class="fas fa-user-shield"></i>
+          Continue as Guest
+        </a>
+      </div>
+
+      <!-- Sign Up Link -->
+      <div class="signup-link">
+        Don't have an account? <a href="auth-register.html">Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCRIPT 1 — Plain script. No imports, always executes.
+       Handles: particles, toast, ripple, password toggle,
+       validation, email form, Apple, Facebook, Guest, misc.
+       These work even if Firebase credentials are missing.
+       ═══════════════════════════════════════════════════════ -->
+  <script>
+    /* A — Particles */
+    var pc = document.getElementById('particles');
+    for (var pi = 0; pi < 50; pi++) {
+      var p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left              = (Math.random() * 100) + '%';
+      p.style.animationDelay    = (Math.random() * 15) + 's';
+      p.style.animationDuration = (Math.random() * 10 + 10) + 's';
+      pc.appendChild(p);
+    }
+
+    /* B — Toast */
+    function showToast(msg, type) {
+      type = type || 'success';
+      var t = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = msg;
+      t.className = 'toast ' + type;
+      t.querySelector('i').className =
+        type === 'success' ? 'fas fa-check-circle' :
+        type === 'error'   ? 'fas fa-exclamation-circle' : 'fas fa-info-circle';
+      t.classList.add('show');
+      clearTimeout(t._t);
+      t._t = setTimeout(function() { t.classList.remove('show'); }, 4500);
+    }
+    window.showToast = showToast;
+
+    /* C — Ripple */
+    document.querySelectorAll('.btn-primary,.btn-social,.btn-google-full')
+      .forEach(function(b) {
+        b.addEventListener('click', function(e) {
+          var r = document.createElement('span');
+          var rect = b.getBoundingClientRect();
+          var s = Math.max(rect.width, rect.height);
+          r.style.cssText = 'width:'+s+'px;height:'+s+'px;left:'+(e.clientX-rect.left-s/2)+'px;top:'+(e.clientY-rect.top-s/2)+'px;';
+          r.className = 'ripple';
+          b.appendChild(r);
+          setTimeout(function(){ r.remove(); }, 600);
+        });
+      });
+
+    /* D — Password toggle */
+    var pwToggle = document.getElementById('passwordToggle');
+    var pwInput  = document.getElementById('password');
+    pwToggle.addEventListener('click', function() {
+      var isT = pwInput.type === 'text';
+      pwInput.type = isT ? 'password' : 'text';
+      pwToggle.querySelector('i').classList.toggle('fa-eye',       isT);
+      pwToggle.querySelector('i').classList.toggle('fa-eye-slash', !isT);
+    });
+
+    /* E — Validation */
+    var emailInput = document.getElementById('emailOrMobile');
+    var emailErr   = document.getElementById('emailError');
+    var pwErr      = document.getElementById('passwordError');
+    function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || /^\d{10}$/.test(v); }
+    emailInput.addEventListener('blur', function() {
+      var v = emailInput.value.trim(), ok = v && validEmail(v);
+      emailInput.classList.toggle('error', !!(v && !ok));
+      emailInput.classList.toggle('success', !!ok);
+      emailErr.classList.toggle('show', !!(v && !ok));
+      emailInput.parentElement.querySelector('.success-icon').classList.toggle('show', !!ok);
+    });
+    pwInput.addEventListener('blur', function() {
+      var ok = pwInput.value.trim().length >= 6;
+      pwInput.classList.toggle('error', !ok);
+      pwInput.classList.toggle('success', ok);
+      pwErr.classList.toggle('show', !ok);
+      pwInput.parentElement.querySelector('.success-icon').classList.toggle('show', ok);
+    });
+
+    function resolvePageUrl(page) {
+      return new URL(page, window.location.href).toString();
+    }
+
+    /* F — Email/password form */
+    var loginBtn = document.getElementById('loginBtn');
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var email = emailInput.value.trim(), pw = pwInput.value.trim();
+      var rem   = document.getElementById('rememberMe').checked;
+      if (!validEmail(email)) { showToast('Enter a valid email or 10-digit mobile', 'error'); emailInput.focus(); return; }
+      if (pw.length < 6)      { showToast('Password must be at least 6 characters', 'error'); pwInput.focus(); return; }
+      loginBtn.classList.add('loading');
+      setTimeout(function() {
+        localStorage.setItem('authToken',     'auth_token_' + Date.now());
+        localStorage.setItem('userEmail',     email);
+        localStorage.setItem('authTimestamp', Date.now().toString());
+        if (rem) localStorage.setItem('rememberMe', 'true');
+        showToast('Login successful! Redirecting…', 'success');
+        setTimeout(function() { window.location.href = resolvePageUrl('index.html'); }, 1400);
+      }, 1600);
+    });
+
+    /* I — Apple & Facebook popup helpers */
+    function centredPopup(url, title, w, h) {
+      var l = Math.round((screen.width - w) / 2), t = Math.round((screen.height - h) / 2);
+      return window.open(url, title, 'width='+w+',height='+h+',left='+l+',top='+t+',resizable=yes,scrollbars=yes');
+    }
+    function watchPopup(popup, cb) {
+      var poll = setInterval(function() {
+        try { if (!popup || popup.closed) { clearInterval(poll); cb(); } } catch(_) {}
+      }, 500);
+    }
+    function socialPopup(btn, url, label, prefix, ico) {
+      /* window.open MUST be synchronous first call to avoid popup blocker */
+      var popup = centredPopup(url, label + ' Sign-In', 500, 640);
+      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+        showToast('Popup blocked — opening ' + label + ' in this tab…', 'error');
+        setTimeout(function() { window.location.href = url; }, 800);
+        return;
+      }
+      var icon = btn.querySelector('i'), lbl = btn.querySelector('.social-label');
+      btn.disabled = true; btn.style.opacity = '0.75';
+      if (icon) icon.className = 'fas fa-spinner fa-spin';
+      if (lbl)  lbl.textContent = 'Opening…';
+      showToast(label + ' sign-in page opened.', 'success');
+      watchPopup(popup, function() {
+        btn.disabled = false; btn.style.opacity = '1';
+        if (icon) icon.className = ico;
+        if (lbl)  lbl.textContent = label;
+        localStorage.setItem('authToken',     prefix + '_token_' + Date.now());
+        localStorage.setItem('userEmail',     label.toLowerCase() + '_user@example.com');
+        localStorage.setItem('userName',      label + ' User');
+        localStorage.setItem('authTimestamp', Date.now().toString());
+        localStorage.setItem('rememberMe',    'true');
+        showToast('Signed in with ' + label + '! Redirecting…', 'success');
+        setTimeout(function() { window.location.href = resolvePageUrl('index.html'); }, 1200);
+      });
+    }
+    document.getElementById('appleLogin').addEventListener('click', function() {
+      socialPopup(this, 'https://appleid.apple.com/sign-in', 'Apple', 'apple', 'fab fa-apple');
+    });
+    document.getElementById('facebookLogin').addEventListener('click', function() {
+      socialPopup(this, 'https://www.facebook.com/login', 'Facebook', 'facebook', 'fab fa-facebook-f');
+    });
+
+    /* J — Guest */
+    document.getElementById('guestLogin').addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.setItem('guestMode', 'true');
+      localStorage.setItem('authToken', 'guest_token_' + Date.now());
+      localStorage.setItem('authTimestamp', Date.now().toString());
+      showToast('Continuing as guest…', 'success');
+      setTimeout(function() { window.location.href = resolvePageUrl('index.html'); }, 1400);
+    });
+
+    /* K — Misc */
+    document.getElementById('forgotPassword').addEventListener('click', function(e) {
+      e.preventDefault();
+      showToast('Redirecting to password recovery…', 'success');
+      setTimeout(function() { window.location.href = resolvePageUrl('auth-forgot-password.html'); }, 1400);
+    });
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      showToast('Theme toggle — coming soon!', 'error');
+    });
+
+    /* H — Auto-redirect if session already valid */
+    (function() {
+      var tok = localStorage.getItem('authToken');
+      var ts  = parseInt(localStorage.getItem('authTimestamp') || '0', 10);
+      var rem = localStorage.getItem('rememberMe') === 'true';
+      var exp = rem ? 30*24*60*60*1000 : 24*60*60*1000;
+      if (tok && (Date.now() - ts) < exp) window.location.href = resolvePageUrl('index.html');
+    })();
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCRIPT 2 — Firebase Google Sign-In
+       Dynamic import — Firebase SDK loads only when the user
+       clicks. If credentials are missing, shows a clear error
+       instead of silently dying during page load.
+       ═══════════════════════════════════════════════════════ -->
+  <script>
+    (function() {
+      var googleBtn  = document.getElementById('googleSignInBtn');
+      var gBtnText   = googleBtn.querySelector('.g-btn-text');
+      var isSigningIn = false;
+
+      /* Loading state */
+      function setLoading(on) {
+        isSigningIn            = on;
+        googleBtn.disabled     = on;
+        googleBtn.classList.toggle('loading', on);
+        gBtnText.textContent   = on ? 'Signing in…' : 'Continue with Google';
+      }
+
+      /* Map Firebase error codes → friendly messages.
+         Returns null for user-cancelled events (silent). */
+      function errMsg(code) {
+        var map = {
+          'auth/popup-closed-by-user'   : null,
+          'auth/cancelled-popup-request': null,
+          'auth/popup-blocked'          : '🚫 Popup blocked. Allow popups for this site then try again.',
+          'auth/network-request-failed' : '🌐 Network error. Check your connection and try again.',
+          'auth/unauthorized-domain'    : '🔒 Domain not authorised. Add this domain in Firebase Console → Authentication → Authorised domains.',
+          'auth/operation-not-allowed'  : '🔒 Google sign-in is not enabled. Enable it in Firebase Console → Authentication → Sign-in method.',
+          'auth/invalid-api-key'        : '🔑 Invalid API key in firebase-config.js.',
+          'auth/user-disabled'          : '⛔ This account has been disabled.',
+          'auth/internal-error'         : '⚠️ Internal Firebase error. Please try again.'
+        };
+        if (code && code in map) return map[code];
+        if (code) return 'Google sign-in failed (' + code + '). Please try again.';
+        return '⚠️ Sign-in failed. Please try again.';
+      }
+
+      /* Save real Firebase user into localStorage for auth-guard */
+      function saveUser(user) {
+        localStorage.setItem('authToken',     user.uid);
+        localStorage.setItem('firebaseUID',   user.uid);
+        localStorage.setItem('userEmail',     user.email       || '');
+        localStorage.setItem('userName',      user.displayName || '');
+        localStorage.setItem('userPhoto',     user.photoURL    || '');
+        localStorage.setItem('authTimestamp', Date.now().toString());
+        localStorage.setItem('rememberMe',    'true');
+      }
+
+      /* ── Google Sign-In click handler ──────────────────────
+         Uses window.auraSignInWithGoogle set by firebase-config.js
+         (compat SDK — works on both file:// and http://)          */
+      googleBtn.addEventListener('click', async function() {
+        if (isSigningIn) return;
+
+        /* firebase-config.js must have loaded first */
+        if (typeof window.auraSignInWithGoogle !== 'function') {
+          window.showToast('Firebase is still loading. Please wait a moment and try again.', 'error');
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          var result = await window.auraSignInWithGoogle();
+          var user   = result.user;
+          saveUser(user);
+          window.showToast('Welcome, ' + (user.displayName || user.email) + '! Redirecting…', 'success');
+          setTimeout(function() { window.location.href = resolvePageUrl('index.html'); }, 1400);
+
+        } catch (err) {
+          setLoading(false);
+          console.error('[Firebase Auth]', err.code, err.message);
+          var msg = errMsg(err.code);
+          if (msg) window.showToast(msg, 'error');
+        }
+      });
+
+      /* Auto-redirect if already signed in via Firebase */
+      if (typeof window.auraObserveAuth === 'function') {
+        window.auraObserveAuth(async function(user) {
+          if (user && !isSigningIn) {
+            if (localStorage.getItem('logoutTriggered') === 'true') {
+              localStorage.removeItem('logoutTriggered');
+              if (typeof window.auraSignOut === 'function') {
+                try {
+                  await window.auraSignOut();
+                } catch (e) {
+                  console.error('Failed to sign out from Firebase:', e);
+                }
+              }
+              return;
+            }
+            saveUser(user);
+            window.location.href = resolvePageUrl('index.html');
+          } else if (!user) {
+            localStorage.removeItem('logoutTriggered');
+          }
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>
